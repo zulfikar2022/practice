@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
-import { createStudentIntoDB, getStudentById } from './student.service';
+import {
+  createStudentIntoDB,
+  getAllStudents,
+  getStudentById,
+} from './student.service';
 import mongoose, { ObjectId, Schema, Types } from 'mongoose';
 
 export const createStudent = async (req: Request, res: Response) => {
@@ -33,5 +37,17 @@ export const getStudent = async (req: Request, res: Response) => {
     res.status(400).json({
       message: error?.message || 'some error ocurred',
     });
+  }
+};
+
+export const getStudents = async (req: Request, res: Response) => {
+  try {
+    const students = await getAllStudents();
+    res.status(200).json({
+      message: 'All students got successfully',
+      data: students,
+    });
+  } catch (error: any) {
+    res.json(error?.message);
   }
 };

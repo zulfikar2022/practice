@@ -11,3 +11,8 @@ export const getStudentById = async (id: ObjectId) => {
   const student = await Student.findById(id);
   return student;
 };
+
+export const getAllStudents = async () => {
+  const students = await Student.find({});
+  return students;
+};
