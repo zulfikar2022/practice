@@ -17,7 +17,7 @@ export type UserName = {
   middleName?: string;
   lastName: string;
 };
-export type Student = {
+export type StudentData = {
   id: string;
   name: UserName;
   gender: 'male' | 'female';

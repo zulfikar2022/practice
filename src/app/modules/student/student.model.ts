@@ -2,7 +2,7 @@ import { Schema, model, connect } from 'mongoose';
 import {
   Guardian,
   LocalGuardian,
-  Student,
+  StudentData,
   UserName,
 } from './student.interface';
 
@@ -65,7 +65,7 @@ const localGuardianSchema = new Schema<LocalGuardian>({
   },
 });
 
-const studentSchema = new Schema<Student>({
+const studentSchema = new Schema<StudentData>({
   id: {
     type: String,
     required: true,
@@ -106,4 +106,4 @@ const studentSchema = new Schema<Student>({
   isActive: ['active', 'blocked'],
 });
 
-const Student = model<Student>('Student', studentSchema);
+export const Student = model<StudentData>('Student', studentSchema);
