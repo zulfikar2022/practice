@@ -1,16 +1,76 @@
 import { Schema, model, connect } from 'mongoose';
-import { Student } from './student.interface';
+import {
+  Guardian,
+  LocalGuardian,
+  Student,
+  UserName,
+} from './student.interface';
+
+const userNameSchema = new Schema<UserName>({
+  firstName: {
+    type: String,
+    required: true,
+  },
+  middleName: {
+    type: String,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+});
+const guardianSchema = new Schema<Guardian>({
+  fathersName: {
+    type: String,
+    require: true,
+  },
+  fathersOccupation: {
+    type: String,
+    required: true,
+  },
+  fathersContactNumber: {
+    type: String,
+    required: true,
+  },
+  mothersName: {
+    type: String,
+    required: true,
+  },
+  mothersOccupation: {
+    type: String,
+    required: true,
+  },
+  mothersContactNumber: {
+    type: String,
+    required: true,
+  },
+});
+
+const localGuardianSchema = new Schema<LocalGuardian>({
+  name: {
+    type: String,
+    required: true,
+  },
+  occupation: {
+    type: String,
+    required: true,
+  },
+  contactNo: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+});
 
 const StudentSchema = new Schema<Student>({
   id: {
     type: String,
     required: true,
   },
-  name: {
-    firstName: { type: String, required: true },
-    middleName: { type: String },
-    loadClass: { type: String, required: true },
-  },
+  name: userNameSchema,
   gender: ['male', 'female'],
   email: {
     type: String,
@@ -38,50 +98,8 @@ const StudentSchema = new Schema<Student>({
     type: String,
     required: true,
   },
-  guardian: {
-    fathersName: {
-      type: String,
-      require: true,
-    },
-    fathersOccupation: {
-      type: String,
-      required: true,
-    },
-    fathersContactNumber: {
-      type: String,
-      required: true,
-    },
-    mothersName: {
-      type: String,
-      required: true,
-    },
-    mothersOccupation: {
-      type: String,
-      required: true,
-    },
-    mothersContactNumber: {
-      type: String,
-      required: true,
-    },
-  },
-  localGuardian: {
-    name: {
-      type: String,
-      required: true,
-    },
-    occupation: {
-      type: String,
-      required: true,
-    },
-    contactNo: {
-      type: String,
-      required: true,
-    },
-    address: {
-      type: String,
-      required: true,
-    },
-  },
+  guardian: guardianSchema,
+  localGuardian: localGuardianSchema,
   profileImage: {
     type: String,
   },
