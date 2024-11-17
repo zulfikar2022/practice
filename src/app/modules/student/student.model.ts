@@ -65,7 +65,7 @@ const localGuardianSchema = new Schema<LocalGuardian>({
   },
 });
 
-const StudentSchema = new Schema<Student>({
+const studentSchema = new Schema<Student>({
   id: {
     type: String,
     required: true,
@@ -105,3 +105,5 @@ const StudentSchema = new Schema<Student>({
   },
   isActive: ['active', 'blocked'],
 });
+
+const Student = model<Student>('Student', studentSchema);
