@@ -10,7 +10,7 @@ export const router = express.Router();
 // will call controller function
 
 router.post('/create-student', createStudent);
-router.get('/get-student/:id', getStudent);
+router.get('/:id', getStudent);
 router.get('/', getStudents);
 
 router.all('*', (req: Request, res: Response) => {
