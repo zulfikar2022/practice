@@ -4,7 +4,7 @@ import {
   getAllStudents,
   getStudentById,
 } from './student.service';
-import mongoose, { ObjectId, Schema, Types } from 'mongoose';
+import { Schema, Types } from 'mongoose';
 
 export const createStudent = async (req: Request, res: Response) => {
   const student = req.body;
@@ -15,8 +15,13 @@ export const createStudent = async (req: Request, res: Response) => {
       message: 'User inserted into the database successfully.',
       data: result,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    // console.log(error);
+    console.log('some error happened');
+    res.status(500).json({
+      success: false,
+      message: error?.message,
+    });
   }
 };
 

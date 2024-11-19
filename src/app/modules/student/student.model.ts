@@ -6,71 +6,87 @@ import {
   UserName,
 } from './student.interface';
 
-const userNameSchema = new Schema<UserName>({
-  firstName: {
-    type: String,
-    required: true,
+const userNameSchema = new Schema<UserName>(
+  {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    middleName: {
+      type: String,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
   },
-  middleName: {
-    type: String,
+  { _id: false },
+);
+const guardianSchema = new Schema<Guardian>(
+  {
+    fathersName: {
+      type: String,
+      require: true,
+    },
+    fathersOccupation: {
+      type: String,
+      required: true,
+    },
+    fathersContactNumber: {
+      type: String,
+      required: true,
+    },
+    mothersName: {
+      type: String,
+      required: true,
+    },
+    mothersOccupation: {
+      type: String,
+      required: true,
+    },
+    mothersContactNumber: {
+      type: String,
+      required: true,
+    },
   },
-  lastName: {
-    type: String,
-    required: true,
-  },
-});
-const guardianSchema = new Schema<Guardian>({
-  fathersName: {
-    type: String,
-    require: true,
-  },
-  fathersOccupation: {
-    type: String,
-    required: true,
-  },
-  fathersContactNumber: {
-    type: String,
-    required: true,
-  },
-  mothersName: {
-    type: String,
-    required: true,
-  },
-  mothersOccupation: {
-    type: String,
-    required: true,
-  },
-  mothersContactNumber: {
-    type: String,
-    required: true,
-  },
-});
+  { _id: false },
+);
 
-const localGuardianSchema = new Schema<LocalGuardian>({
-  name: {
-    type: String,
-    required: true,
+const localGuardianSchema = new Schema<LocalGuardian>(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    occupation: {
+      type: String,
+      required: true,
+    },
+    contactNo: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
   },
-  occupation: {
-    type: String,
-    required: true,
-  },
-  contactNo: {
-    type: String,
-    required: true,
-  },
-  address: {
-    type: String,
-    required: true,
-  },
-});
+  { _id: false },
+);
 
 const studentSchema = new Schema<StudentData>({
-  id: {
-    type: String,
+  name: {
+    type: userNameSchema,
+    required: true,
   },
-  name: userNameSchema,
-  gender: ['male', 'female'],
+  gender: {
+    type: String,
+    enum: {
+      values: ['male', 'female', 'other'],
+      message: "Gender can be one of the following: 'male','female' or 'other'",
+    },
+    required: true,
+  },
   email: {
     type: String,
     required: true,
@@ -87,7 +103,11 @@ const studentSchema = new Schema<StudentData>({
     required: true,
   },
   bloodGroup: {
-    type: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+    type: String,
+    enum: {
+      values: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+      message: '{VALUE} is not defined',
+    },
   },
   presentAddress: {
     type: String,
@@ -97,12 +117,25 @@ const studentSchema = new Schema<StudentData>({
     type: String,
     required: true,
   },
-  guardian: guardianSchema,
-  localGuardian: localGuardianSchema,
+  guardian: {
+    type: guardianSchema,
+    required: true,
+  },
+  localGuardian: {
+    type: localGuardianSchema,
+    required: true,
+  },
   profileImage: {
     type: String,
   },
-  isActive: ['active', 'blocked'],
+  isActive: {
+    type: String,
+    enum: {
+      values: ['active', 'blocked'],
+      message: '{VALUE} is not a defined activity status',
+    },
+    default: 'active',
+  },
 });
 
 export const Student = model<StudentData>('Student', studentSchema);
