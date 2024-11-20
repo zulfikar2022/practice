@@ -3,8 +3,11 @@ import {
   Guardian,
   LocalGuardian,
   StudentData,
+  StudentMethods,
+  StudentModel,
   UserName,
 } from './student.interface';
+import validator from 'validator';
 
 const userNameSchema = new Schema<UserName>(
   {
@@ -13,9 +16,11 @@ const userNameSchema = new Schema<UserName>(
       required: true,
       trim: true,
       minlength: [3, 'Minimum length of firstName is 3'],
-      set: (value: String) => value.toUpperCase(),
-      validate: function (value: String) {
-        console.log(value);
+      validate: {
+        validator: (value: string) => {
+          return validator.isAlpha(value);
+        },
+        message: '{VALUE} is not a string value',
       },
     },
     middleName: {
@@ -27,7 +32,6 @@ const userNameSchema = new Schema<UserName>(
       type: String,
       required: true,
       trim: true,
-      set: (value: String) => value.toUpperCase(),
     },
   },
   { _id: false },
@@ -94,7 +98,7 @@ const localGuardianSchema = new Schema<LocalGuardian>(
   { _id: false },
 );
 
-const studentSchema = new Schema<StudentData>({
+const studentSchema = new Schema<StudentData, StudentModel, StudentMethods>({
   name: {
     type: userNameSchema,
     required: true,
@@ -111,6 +115,12 @@ const studentSchema = new Schema<StudentData>({
     type: String,
     required: true,
     trim: true,
+    validate: {
+      validator: (value) => {
+        return validator.isEmail(value);
+      },
+      message: '{VALUE} is not a valid email',
+    },
   },
   dateOfBirth: {
     type: String,
@@ -164,4 +174,13 @@ const studentSchema = new Schema<StudentData>({
   },
 });
 
-export const Student = model<StudentData>('Student', studentSchema);
+studentSchema.methods.isUserExists = async function (email: string) {
+  const existingUser = await Student.findOne({ email: email });
+
+  return existingUser;
+};
+
+export const Student = model<StudentData, StudentModel>(
+  'Student',
+  studentSchema,
+);

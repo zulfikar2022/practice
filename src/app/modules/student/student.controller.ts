@@ -5,11 +5,28 @@ import {
   getStudentById,
 } from './student.service';
 import { Schema, Types } from 'mongoose';
+import { studentValidationSchema } from './student.validation';
+
+// creating a schema validation using joi
 
 export const createStudent = async (req: Request, res: Response) => {
   const student = req.body;
+  // data validation using joi
+  const { error, value } = studentValidationSchema.validate(student, {
+    abortEarly: false,
+  });
+
+  if (error) {
+    console.log(error);
+    res
+      .json({
+        message: 'Schema validation failed',
+        error: error.details.map((err) => err.message),
+      })
+      .status(500);
+  }
   try {
-    const result = await createStudentIntoDB(student);
+    const result = await createStudentIntoDB(value);
     res.status(200).json({
       success: true,
       message: 'User inserted into the database successfully.',
@@ -17,7 +34,7 @@ export const createStudent = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     // console.log(error);
-    console.log('some error happened');
+    console.log('Some error happened');
     res.status(500).json({
       success: false,
       message: error?.message,
