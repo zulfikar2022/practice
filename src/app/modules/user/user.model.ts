@@ -1,8 +1,8 @@
 import mongoose, { model } from 'mongoose';
 import { TUser } from './user.interface';
-import { config } from 'dotenv';
+import bcrypt from 'bcrypt';
 
-const userSchema = new mongoose.Schema<TUser>(
+export const userSchema = new mongoose.Schema<TUser>(
   {
     id: {
       type: String,
@@ -35,5 +35,19 @@ const userSchema = new mongoose.Schema<TUser>(
     timestamps: true,
   },
 );
+
+userSchema.pre('save', async function (next) {
+  if (this.isModified('password')) {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+      next();
+    } catch (error: any) {
+      return next(error);
+    }
+  } else {
+    next();
+  }
+});
 
 export const User = model<TUser>('User', userSchema);

@@ -29,6 +29,7 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
       return newStudent;
     }
   } catch (error) {
+    console.log(error);
     throw new Error('Error while creating a user');
   }
 };
