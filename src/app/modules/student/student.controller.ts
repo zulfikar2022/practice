@@ -5,7 +5,7 @@ import { StudentServices } from './student.service';
 
 // creating a schema validation using joi
 
-export const getStudent = async (req: Request, res: Response) => {
+const getStudent = async (req: Request, res: Response) => {
   const id: Schema.Types.ObjectId = new Types.ObjectId(
     req.params.id,
   ) as unknown as Schema.Types.ObjectId;
@@ -25,7 +25,7 @@ export const getStudent = async (req: Request, res: Response) => {
   }
 };
 
-export const getStudents = async (req: Request, res: Response) => {
+const getStudents = async (req: Request, res: Response) => {
   try {
     const students = await StudentServices.getAllStudents();
     res.status(200).json({
@@ -37,7 +37,23 @@ export const getStudents = async (req: Request, res: Response) => {
   }
 };
 
+const deleteStudent = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  try {
+    const result = await StudentServices.deleteFromDB(id);
+    res.status(200).json({
+      message: 'Student deleted successfully',
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      message: error?.message || 'some error ocurred',
+    });
+  }
+};
+
 export const StudentControllers = {
   getStudent,
   getStudents,
+  deleteStudent,
 };

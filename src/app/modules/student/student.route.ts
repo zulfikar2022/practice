@@ -7,6 +7,7 @@ export const router = express.Router();
 
 router.get('/:id', StudentControllers.getStudent);
 router.get('/', StudentControllers.getStudents);
+router.delete('/:id', StudentControllers.deleteStudent);
 
 router.all('*', (req: Request, res: Response) => {
   res.status(400).json({
