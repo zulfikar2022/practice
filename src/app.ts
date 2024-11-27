@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import { StudentRoutes } from './app/modules/student/student.route.js';
 import { UserRoutes } from './app/modules/user/user.route.js';
@@ -13,4 +13,8 @@ app.use('/api/v1/users/', UserRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.status(200).send({ message: 'success fully received message' });
+});
+
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  res.status(error?.status || 500).send({ message: error.message });
 });

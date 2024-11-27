@@ -1,11 +1,11 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import { Schema, Types } from 'mongoose';
 import { StudentServices } from './student.service';
 
 // creating a schema validation using joi
 
-const getStudent = async (req: Request, res: Response) => {
+const getStudent = async (req: Request, res: Response, next: NextFunction) => {
   const id: Schema.Types.ObjectId = new Types.ObjectId(
     req.params.id,
   ) as unknown as Schema.Types.ObjectId;
@@ -16,16 +16,12 @@ const getStudent = async (req: Request, res: Response) => {
       message: 'Student data got successfully',
       data: student,
     });
-  } catch (error: any) {
-    console.log(error);
-
-    res.status(400).json({
-      message: error?.message || 'some error ocurred',
-    });
+  } catch (error) {
+    next(error);
   }
 };
 
-const getStudents = async (req: Request, res: Response) => {
+const getStudents = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const students = await StudentServices.getAllStudents();
     res.status(200).json({
@@ -33,11 +29,15 @@ const getStudents = async (req: Request, res: Response) => {
       data: students,
     });
   } catch (error: any) {
-    res.json(error?.message);
+    next(error);
   }
 };
 
-const deleteStudent = async (req: Request, res: Response) => {
+const deleteStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const id = req.params.id;
   try {
     const result = await StudentServices.deleteFromDB(id);
@@ -46,9 +46,7 @@ const deleteStudent = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error: any) {
-    res.status(400).json({
-      message: error?.message || 'some error ocurred',
-    });
+    next(error);
   }
 };
 
