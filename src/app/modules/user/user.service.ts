@@ -24,9 +24,13 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
       // set id , _id as user
       studentData.id = newUser.id; // embedding id
       studentData.user = newUser._id; // reference id
-
-      const newStudent = await Student.create(studentData);
-      return newStudent;
+      try {
+        const newStudent = await Student.create(studentData);
+        return newStudent;
+      } catch (error: any) {
+        await User.deleteOne({ id: newUser.id });
+        throw new Error('Error while creating a student');
+      }
     }
   } catch (error) {
     console.log(error);

@@ -16,5 +16,13 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  res.status(error?.status || 500).send({ message: error.message });
+  res.status(error?.status || 500).send({
+    success: false,
+    message: error.message,
+    error: error,
+  });
+});
+
+app.all('*', (req: Request, res: Response) => {
+  res.status(404).send({ message: 'Route not found', data: '' });
 });
