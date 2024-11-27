@@ -3,11 +3,11 @@ import { UserServices } from './user.service';
 import { UserValidation } from './user.validation';
 
 const createStudent = async (req: Request, res: Response) => {
-  const student = req.body;
+  const { student, password } = req.body;
   // data validation using jod
   try {
-    UserValidation.userValidationSchema.parse(student);
-    const result = await UserServices.createStudentIntoDB(student);
+    // UserValidation.userValidationSchema.parse(student);
+    const result = await UserServices.createStudentIntoDB(password, student);
     res.status(200).json({
       success: true,
       message: 'User inserted into the database successfully.',

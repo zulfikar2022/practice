@@ -1,5 +1,6 @@
 import mongoose, { model } from 'mongoose';
 import { TUser } from './user.interface';
+import { config } from 'dotenv';
 
 const userSchema = new mongoose.Schema<TUser>(
   {
