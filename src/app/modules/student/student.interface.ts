@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 export type Guardian = {
   fathersName: string;
@@ -19,8 +19,9 @@ export type UserName = {
   middleName?: string;
   lastName: string;
 };
-export type StudentData = {
+export type TStudent = {
   id: string;
+  user: Types.ObjectId;
   name: UserName;
   gender: 'male' | 'female';
   email: string;
@@ -37,11 +38,11 @@ export type StudentData = {
 };
 
 export type StudentMethods = {
-  isUserExists(id: string): Promise<StudentData | null>;
+  isUserExists(id: string): Promise<TStudent | null>;
 };
 
 export type StudentModel = Model<
-  StudentData,
+  TStudent,
   Record<string, never>,
   StudentMethods
 >;

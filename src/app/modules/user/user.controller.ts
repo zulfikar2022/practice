@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { UserServices } from './user.service';
-import { UserValidation } from './user.validation';
 
 const createStudent = async (req: Request, res: Response) => {
   const { student, password } = req.body;

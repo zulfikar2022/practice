@@ -6,6 +6,8 @@ mongoose
   .connect(config.database_url as string)
   .then(() => {
     console.log('database connected successfully');
+    // console.log(`database name: ${mongoose.connection}`);
+    console.log(mongoose.connection.name);
     app.listen(config.port, () => {
       console.log('server is running', config.port);
     });

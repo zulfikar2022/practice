@@ -2,7 +2,7 @@ import { Schema, model, connect } from 'mongoose';
 import {
   Guardian,
   LocalGuardian,
-  StudentData,
+  TStudent,
   StudentMethods,
   StudentModel,
   UserName,
@@ -98,10 +98,16 @@ const localGuardianSchema = new Schema<LocalGuardian>(
   { _id: false },
 );
 
-const studentSchema = new Schema<StudentData, StudentModel, StudentMethods>({
+const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
   name: {
     type: userNameSchema,
     required: true,
+  },
+  user: {
+    type: Schema.Types.ObjectId,
+    required: [true, 'User id is required'],
+    unique: true,
+    ref: 'User',
   },
   gender: {
     type: String,
@@ -180,7 +186,4 @@ studentSchema.methods.isUserExists = async function (email: string) {
   return existingUser;
 };
 
-export const Student = model<StudentData, StudentModel>(
-  'Student',
-  studentSchema,
-);
+export const Student = model<TStudent, StudentModel>('Student', studentSchema);
