@@ -1,3 +1,6 @@
+import { studentValidationSchema } from '../student/student.validation';
+import { UserServices } from './user.service';
+
 const createStudent = async (req: Request, res: Response) => {
   const student = req.body;
   // data validation using joi
@@ -7,15 +10,13 @@ const createStudent = async (req: Request, res: Response) => {
 
   if (error) {
     console.log(error);
-    res
-      .json({
-        message: 'Schema validation failed',
-        error: error.details.map((err) => err.message),
-      })
-      .status(500);
+    res.status(500).json({
+      message: 'Schema validation failed',
+      error: error.details.map((err) => err.message),
+    });
   }
   try {
-    const result = await createStudentIntoDB(value);
+    const result = await UserServices.createStudentIntoDB(value);
     res.status(200).json({
       success: true,
       message: 'User inserted into the database successfully.',
@@ -30,4 +31,4 @@ const createStudent = async (req: Request, res: Response) => {
     });
   }
 };
-export const UserControllers = {};
+export const UserControllers = { createStudent };

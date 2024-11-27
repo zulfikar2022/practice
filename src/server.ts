@@ -5,7 +5,7 @@ import config from './app/config/index.js';
 mongoose
   .connect(config.database_url as string)
   .then(() => {
-    console.log('data base connected successfully');
+    console.log('database connected successfully');
     app.listen(config.port, () => {
       console.log('server is running', config.port);
     });

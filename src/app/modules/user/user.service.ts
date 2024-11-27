@@ -1,13 +1,11 @@
 import { StudentData } from '../student/student.interface';
 import { Student } from '../student/student.model';
 import { TUser } from './user.interface';
+import { User } from './user.model';
 
-export const createStudentIntoDB = async (studentData: StudentData) => {
+const createStudentIntoDB = async (studentData: StudentData) => {
   try {
-    // const result = await Student.create(student); // usage of built in static method
-    const student = new Student(studentData);
-    student.isUserExists(student.email);
-    const result = await student.save(); // usage of a built in instance method
+    const result = await User.create(studentData);
     return result;
   } catch (error: any) {
     throw Error(error.message);
