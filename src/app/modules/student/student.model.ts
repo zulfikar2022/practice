@@ -170,14 +170,6 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
     type: String,
     trim: true,
   },
-  isActive: {
-    type: String,
-    enum: {
-      values: ['active', 'blocked'],
-      message: '{VALUE} is not a defined activity status',
-    },
-    default: 'active',
-  },
 });
 
 studentSchema.methods.isUserExists = async function (email: string) {

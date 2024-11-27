@@ -1,5 +1,6 @@
 import config from '../../config';
 import { TStudent } from '../student/student.interface';
+import { Student } from '../student/student.model';
 import { NewUser, TUser } from './user.interface';
 import { User } from './user.model';
 
@@ -16,13 +17,16 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   userData.id = studentData.id;
   try {
     // create a user
-    const result = await User.create(userData);
+    const newUser = await User.create(userData);
 
     // create a student
-    if (Object.keys(result).length > 0) {
+    if (Object.keys(newUser).length > 0) {
       // set id , _id as user
-      studentData.id = result.id;
-      studentData.user = result._id;
+      studentData.id = newUser.id; // embedding id
+      studentData.user = newUser._id; // reference id
+
+      const newStudent = await Student.create(studentData);
+      return newStudent;
     }
   } catch (error) {
     throw new Error('Error while creating a user');
