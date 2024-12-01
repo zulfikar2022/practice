@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 
 import { Schema, Types } from 'mongoose';
 import { StudentServices } from './student.service';
 
 // creating a schema validation using joi
 
-const getStudent = async (req: Request, res: Response, next: NextFunction) => {
+const getStudent: RequestHandler = async (req, res, next) => {
   const id: Schema.Types.ObjectId = new Types.ObjectId(
     req.params.id,
   ) as unknown as Schema.Types.ObjectId;
@@ -21,7 +21,7 @@ const getStudent = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const getStudents = async (req: Request, res: Response, next: NextFunction) => {
+const getStudents: RequestHandler = async (req, res, next) => {
   try {
     const students = await StudentServices.getAllStudents();
     res.status(200).json({
@@ -33,11 +33,7 @@ const getStudents = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const deleteStudent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const deleteStudent: RequestHandler = async (req, res, next) => {
   const id = req.params.id;
   try {
     const result = await StudentServices.deleteFromDB(id);

@@ -1,6 +1,7 @@
 import mongoose, { model } from 'mongoose';
 import { TUser } from './user.interface';
 import bcrypt from 'bcrypt';
+import { NextFunction } from 'express';
 
 export const userSchema = new mongoose.Schema<TUser>(
   {
