@@ -10,7 +10,7 @@ export const router = express.Router();
 router.get('/:id', requestValidator, StudentControllers.getStudent);
 router.get('/', requestValidator, StudentControllers.getStudents);
 router.delete('/:id', StudentControllers.deleteStudent);
-router.put(
+router.patch(
   '/:id',
   requestValidator,
   validateRequest(studentValidations.updateStudentValidationSchema),
