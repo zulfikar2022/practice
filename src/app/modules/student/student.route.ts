@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
 import { StudentControllers } from './student.controller';
 import { requestValidator } from '../../middlewares/validatorMiddleware';
-
 export const router = express.Router();
 
 // will call controller function

@@ -7,7 +7,6 @@ import {
   StudentModel,
   UserName,
 } from './student.interface';
-import validator from 'validator';
 import { z } from 'zod';
 
 const userNameSchema = new Schema<UserName>(
@@ -17,12 +16,6 @@ const userNameSchema = new Schema<UserName>(
       required: true,
       trim: true,
       minlength: [3, 'Minimum length of firstName is 3'],
-      validate: {
-        validator: (value: string) => {
-          return validator.isAlpha(value);
-        },
-        message: '{VALUE} is not a string value',
-      },
     },
     middleName: {
       type: String,

@@ -1,5 +1,3 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express';
-
 import { Schema, Types } from 'mongoose';
 import { StudentServices } from './student.service';
 import { catchAsync } from '../../utils/catchAsync';

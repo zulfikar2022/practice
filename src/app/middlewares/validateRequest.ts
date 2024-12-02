@@ -3,12 +3,8 @@ import { AnyZodObject } from 'zod';
 
 export const validateRequest = (schema: AnyZodObject) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    // validation
-    // if alright next ()
     try {
-      await schema.parseAsync({
-        body: req.body,
-      });
+      await schema.parseAsync(req.body);
       next();
     } catch (error) {
       next(error);
