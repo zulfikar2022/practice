@@ -1,8 +1,12 @@
+import { Schema } from 'zod';
 import config from '../../config';
+import { TAcademicSemester } from '../academicSemester/academicSemester.interface';
+import { AcademicSemester } from '../academicSemester/academicSemester.model';
 import { TStudent } from '../student/student.interface';
 import { Student } from '../student/student.model';
 import { NewUser, TUser } from './user.interface';
 import { User } from './user.model';
+import { generateStudentId } from './user.utils';
 
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   let userData: Partial<TUser> = {} as NewUser;
@@ -15,8 +19,13 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   // set student role
   userData.role = 'student';
 
+  // find academic semester information
+  const academicSemester = await AcademicSemester.findById(
+    studentData.admissionSemester,
+  );
+
   // setting manually generated id
-  userData.id = studentData.id;
+  userData.id = generateStudentId(academicSemester as TAcademicSemester);
   try {
     // create a user
     const newUser = await User.create(userData);
