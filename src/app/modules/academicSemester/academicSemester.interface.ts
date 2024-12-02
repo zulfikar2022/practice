@@ -19,4 +19,5 @@ export type TAcademicSemester = {
   year: string;
   startMonth: TMonth;
   endMonth: TMonth;
+  _id?: string;
 };

@@ -115,6 +115,7 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
     type: String,
     required: true,
     trim: true,
+    unique: true,
     validate: {
       validator: (value) => {
         const { success } = z.string().email().safeParse(value);

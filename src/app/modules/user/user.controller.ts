@@ -6,8 +6,6 @@ const createStudent = catchAsync(async (req, res) => {
 
   console.log('student', student);
 
-  // UserValidation.userValidationSchema.parse(student);
-
   const result = await UserServices.createStudentIntoDB(password, student);
   res.status(200).json({
     success: true,
