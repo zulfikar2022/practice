@@ -3,9 +3,8 @@ import { catchAsync } from '../../utils/catchAsync';
 
 const createStudent = catchAsync(async (req, res) => {
   const { student, password } = req.body;
-  console.log('inside controller');
-  console.log(req.body);
-  // data validation using jod
+
+  console.log('student', student);
 
   // UserValidation.userValidationSchema.parse(student);
 

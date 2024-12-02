@@ -8,6 +8,7 @@ import {
   UserName,
 } from './student.interface';
 import validator from 'validator';
+import { z } from 'zod';
 
 const userNameSchema = new Schema<UserName>(
   {
@@ -123,7 +124,8 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
     trim: true,
     validate: {
       validator: (value) => {
-        return validator.isEmail(value);
+        const { success } = z.string().email().safeParse(value);
+        return success;
       },
       message: '{VALUE} is not a valid email',
     },
