@@ -6,7 +6,9 @@ import { User } from './user.model';
 
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   let userData: Partial<TUser> = {} as NewUser;
-
+  console.log('inside user service.');
+  console.log(`password: ${password}`);
+  console.log(`studentData: ${studentData}`);
   // if password is not provided, use default password
   userData.password = password || (config.default_password as string);
 

@@ -14,6 +14,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  console.log(error);
   res.status(error?.status || 500).send({
     success: false,
     message: error.message,
