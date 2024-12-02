@@ -22,18 +22,18 @@ export type UserName = {
 export type TStudent = {
   id: string;
   user: Types.ObjectId;
-  name: UserName;
+  name: UserName; //
   gender: 'male' | 'female';
   email: string;
   dateOfBirth?: string;
-  contactNumber: string;
-  emergencyContactNumber: string;
+  contactNumber: string; //
+  emergencyContactNumber: string; //
   bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'O+' | 'O-' | 'AB+' | 'AB-';
-  presentAddress: string;
+  presentAddress: string; //
   permanentAddress: string;
-  guardian: Guardian;
-  localGuardian: LocalGuardian;
-  profileImage?: string;
+  guardian: Guardian; //
+  localGuardian: LocalGuardian; //
+  profileImage?: string; //
   admissionSemester: Types.ObjectId;
 };
 

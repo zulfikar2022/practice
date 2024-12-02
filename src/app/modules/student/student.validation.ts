@@ -41,6 +41,19 @@ const createStudentValidationSchema = z.object({
   }),
 });
 
+const updateStudentValidationSchema = z
+  .object({
+    name: userNameValidationSchema,
+    contactNumber: z.string(),
+    emergencyContactNumber: z.string(),
+    presentAddress: z.string(),
+    guardian: guardianValidationSchema,
+    localGuardian: localGuardianValidationSchema,
+    profileImage: z.string(),
+  })
+  .strict();
+
 export const studentValidations = {
   createStudentValidationSchema,
+  updateStudentValidationSchema,
 };

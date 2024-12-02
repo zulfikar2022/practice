@@ -1,5 +1,7 @@
 import { ObjectId } from 'mongoose';
 import { Student } from './student.model';
+import { User } from '../user/user.model';
+import { TStudent } from './student.interface';
 
 const getStudentById = async (id: ObjectId) => {
   const student = await Student.findById(id);
@@ -12,7 +14,33 @@ const getAllStudents = async () => {
 };
 
 const deleteFromDB = async (id: string) => {
-  const result = await Student.updateOne({ id }, { $set: { isDeleted: true } });
+  const targetStudent: TStudent = (await Student.findOne({
+    _id: id,
+  })) as TStudent;
+  console.log(targetStudent);
+  const userId = targetStudent.user;
+  const result = await User.updateOne(
+    { _id: userId },
+    { $set: { isDeleted: true } },
+  );
+  return result;
+};
+
+const updateStudentIntoDB = async (id: string, student: TStudent) => {
+  const result = await Student.updateOne(
+    { _id: id },
+    {
+      $set: {
+        name: student.name,
+        contactNumber: student.contactNumber,
+        emergencyContactNumber: student.emergencyContactNumber,
+        presentAddress: student.presentAddress,
+        guardian: student.guardian,
+        localGuardian: student.localGuardian,
+        profileImage: student.profileImage,
+      },
+    },
+  );
   return result;
 };
 
@@ -20,4 +48,5 @@ export const StudentServices = {
   getStudentById,
   getAllStudents,
   deleteFromDB,
+  updateStudentIntoDB,
 };
