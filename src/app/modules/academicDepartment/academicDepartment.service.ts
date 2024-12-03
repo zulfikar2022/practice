@@ -12,16 +12,22 @@ const createAcademicDepartmentIntoDB = async (payload: TAcadmicDepartment) => {
 };
 
 const getAllAcademicDepartmentsFromDB = async () => {
-  return await AcademicDepartment.find();
+  return await AcademicDepartment.find().populate('academicFaculty');
 };
 const getSpecificAcademicDepartmentFromDB = async (id: string) => {
-  return await AcademicDepartment.findById({ _id: id });
+  return await AcademicDepartment.findById({ _id: id }).populate(
+    'academicFaculty',
+  );
 };
 
 const updateAcademicDepartmentIntoDB = async (
   id: string,
   payload: TAcadmicDepartment,
 ) => {
+  const isDepartmentExists = await AcademicDepartment.findOne({ _id: id });
+  if (!isDepartmentExists) {
+    throw new Error('Department does not exist');
+  }
   return await AcademicDepartment.findByIdAndUpdate(
     { _id: id },
     {

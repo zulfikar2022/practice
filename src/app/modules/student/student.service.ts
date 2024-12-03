@@ -4,12 +4,24 @@ import { User } from '../user/user.model';
 import { TStudent } from './student.interface';
 
 const getStudentById = async (id: ObjectId) => {
-  const student = await Student.findById(id);
+  const student = await Student.findById(id)
+    .populate('admissionSemester')
+    .populate({
+      path: 'user',
+      select:
+        '_id id role needsPasswordChange status isDeleted createdAt updatedAt',
+    });
   return student;
 };
 
 const getAllStudents = async () => {
-  const students = await Student.find({});
+  const students = await Student.find({})
+    .populate({ path: 'admissionSemester' })
+    .populate({
+      path: 'user',
+      select:
+        '_id id role needsPasswordChange status isDeleted createdAt updatedAt',
+    });
   return students;
 };
 
