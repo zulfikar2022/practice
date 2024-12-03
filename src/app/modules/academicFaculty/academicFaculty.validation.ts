@@ -9,9 +9,11 @@ const createAcademicFacultyValidationSchema = z
   .strict();
 const updateAcademicFacultyValidationSchema = z
   .object({
-    name: z.string({
-      invalid_type_error: 'Academic Faculty Name must be a string',
-    }),
+    name: z
+      .string({
+        invalid_type_error: 'Academic Faculty Name must be a string',
+      })
+      .optional(),
   })
   .strict();
 

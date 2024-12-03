@@ -5,17 +5,16 @@ import { AcademicFaculty } from '../academicFaculty/academicFaculty.model';
 const academicDepartmentSchema = new mongoose.Schema<TAcadmicDepartment>({
   name: {
     type: String,
-    required: true,
+    required: [true, 'Department name is required'],
     unique: true,
   },
   academicFaculty: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'AcademicFaculty',
-    required: true,
+    required: [true, 'Academic Faculty is required'],
     validate: {
       validator: async function (value: string) {
         const academicFaculty = await AcademicFaculty.findById(value);
-        console.log('academicFaculty', academicFaculty);
         if (!academicFaculty) {
           return false;
         }
