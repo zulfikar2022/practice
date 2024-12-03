@@ -6,6 +6,7 @@ const academicDepartmentSchema = new mongoose.Schema<TAcadmicDepartment>({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
   academicFaculty: {
     type: mongoose.Schema.Types.ObjectId,
