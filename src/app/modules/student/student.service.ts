@@ -10,6 +10,10 @@ const getStudentById = async (id: ObjectId) => {
       path: 'user',
       select:
         '_id id role needsPasswordChange status isDeleted createdAt updatedAt',
+    })
+    .populate({
+      path: 'academicDepartment',
+      populate: { path: 'academicFaculty' },
     });
   return student;
 };
@@ -21,6 +25,10 @@ const getAllStudents = async () => {
       path: 'user',
       select:
         '_id id role needsPasswordChange status isDeleted createdAt updatedAt',
+    })
+    .populate({
+      path: 'academicDepartment',
+      populate: { path: 'academicFaculty' },
     });
   return students;
 };

@@ -39,6 +39,7 @@ const createStudentValidationSchema = z.object({
       localGuardian: localGuardianValidationSchema,
       profileImage: z.string(),
       admissionSemester: z.string(),
+      academicDepartment: z.string(),
     })
     .strict(),
 });
@@ -46,12 +47,13 @@ const createStudentValidationSchema = z.object({
 const updateStudentValidationSchema = z
   .object({
     name: userNameValidationSchema,
-    contactNumber: z.string(),
-    emergencyContactNumber: z.string(),
-    presentAddress: z.string(),
-    guardian: guardianValidationSchema,
-    localGuardian: localGuardianValidationSchema,
-    profileImage: z.string(),
+    contactNumber: z.string().optional(),
+    emergencyContactNumber: z.string().optional(),
+    presentAddress: z.string().optional(),
+    guardian: guardianValidationSchema.optional(),
+    localGuardian: localGuardianValidationSchema.optional(),
+    profileImage: z.string().optional(),
+    academicDepartment: z.string().optional(),
   })
   .strict();
 
