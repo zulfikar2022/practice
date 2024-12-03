@@ -12,14 +12,17 @@ const academicDepartmentSchema = new mongoose.Schema<TAcadmicDepartment>({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'AcademicFaculty',
     required: true,
-    validator: async function (value: string) {
-      const academicFaculty = await AcademicFaculty.findById(value);
-      if (!academicFaculty) {
-        return false;
-      }
-      return true;
+    validate: {
+      validator: async function (value: string) {
+        const academicFaculty = await AcademicFaculty.findById(value);
+        console.log('academicFaculty', academicFaculty);
+        if (!academicFaculty) {
+          return false;
+        }
+        return true;
+      },
+      message: 'Academic Faculty does not exist',
     },
-    message: 'Academic Faculty does not exist',
   },
 });
 
