@@ -6,7 +6,7 @@ import { academicFacultyValidations } from './academicFaculty.validation';
 const router = express.Router();
 
 router.post(
-  '/created-academic-faculty',
+  '/create-academic-faculty',
   validateRequest(
     academicFacultyValidations.createAcademicFacultyValidationSchema,
   ),
@@ -23,3 +23,5 @@ router.patch(
 router.get('/', academicFacultyControllers.getAllAcademicFaculties);
 
 router.get('/:id', academicFacultyControllers.getSingleAcademicFaculty);
+
+export const academicFacultyRoutes = router;
