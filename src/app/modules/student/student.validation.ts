@@ -46,7 +46,7 @@ const createStudentValidationSchema = z.object({
 
 const updateStudentValidationSchema = z
   .object({
-    name: userNameValidationSchema,
+    name: userNameValidationSchema.optional(),
     contactNumber: z.string().optional(),
     emergencyContactNumber: z.string().optional(),
     presentAddress: z.string().optional(),
