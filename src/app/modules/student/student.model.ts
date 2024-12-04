@@ -8,6 +8,8 @@ import {
   UserName,
 } from './student.interface';
 import { z } from 'zod';
+import { AcademicSemester } from '../academicSemester/academicSemester.model';
+import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 
 const userNameSchema = new Schema<UserName>(
   {
@@ -20,7 +22,6 @@ const userNameSchema = new Schema<UserName>(
     middleName: {
       type: String,
       trim: true,
-      set: (value: String) => value.toUpperCase(),
     },
     lastName: {
       type: String,
@@ -165,14 +166,32 @@ const studentSchema = new Schema<TStudent>({
   admissionSemester: {
     type: Schema.Types.ObjectId,
     ref: 'AcademicSemester',
+    validate: {
+      validator: async function (value: string) {
+        const academicSemester = await AcademicSemester.findById(value);
+        return academicSemester ? true : false;
+      },
+      message: 'Admission semester does not exist',
+    },
   },
   academicDepartment: {
     type: Schema.Types.ObjectId,
     ref: 'AcademicDepartment',
+    validate: {
+      validator: async function (value: string) {
+        const academicDepartment = await AcademicDepartment.findById(value);
+        return academicDepartment ? true : false;
+      },
+      message: 'Academic Department does not exist',
+    },
   },
   profileImage: {
     type: String,
     trim: true,
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,
   },
 });
 

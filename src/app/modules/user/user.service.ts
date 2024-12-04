@@ -8,44 +8,48 @@ import { NewUser, TUser } from './user.interface';
 import { User } from './user.model';
 import { generateStudentId } from './user.utils';
 import { AppError } from '../../errors/AppError';
+import mongoose from 'mongoose';
 
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   let userData: Partial<TUser> = {} as NewUser;
+  const session = await mongoose.startSession();
 
-  // if password is not provided, use default password instead
-  userData.password = password || (config.default_password as string);
+  try {
+    session.startTransaction();
 
-  // set student role
-  userData.role = 'student';
+    userData.password = password || (config.default_password as string);
+    userData.role = 'student';
+    const academicSemester = await AcademicSemester.findById(
+      studentData.admissionSemester,
+    );
+    userData.id = await generateStudentId(
+      academicSemester as TAcademicSemester,
+    );
 
-  // find academic semester information
-  const academicSemester = await AcademicSemester.findById(
-    studentData.admissionSemester,
-  );
+    // transaction-1
+    const newUser = await User.create([userData], { session });
+    if (!newUser.length) {
+      throw new AppError(500, 'User creation failed');
+    }
+    studentData.user = newUser[0]._id;
+
+    // transaction-2
+    const newStudent = await Student.create([studentData], { session });
+
+    if (!newStudent.length) {
+      throw new AppError(500, 'Student creation failed');
+    }
+    await session.commitTransaction();
+    await session.endSession();
+
+    return newStudent;
+  } catch (error) {
+    console.log('transaction failed', error);
+    await session.abortTransaction();
+    await session.endSession();
+  }
 
   // setting manually generated id
-  userData.id = await generateStudentId(academicSemester as TAcademicSemester);
-  try {
-    // create a user
-    const newUser = await User.create(userData);
-
-    // create a student
-    if (Object.keys(newUser).length > 0) {
-      // set id , _id as user
-      studentData.id = newUser.id; // embedding id
-      studentData.user = newUser._id; // reference id
-      try {
-        const newStudent = await Student.create(studentData);
-        return newStudent;
-      } catch (error: any) {
-        await User.deleteOne({ id: newUser.id });
-        throw new AppError(500, 'Error while creating a student');
-      }
-    }
-  } catch (error) {
-    console.log(error);
-    throw new AppError(500, 'Error while creating a user');
-  }
 };
 
 export const UserServices = { createStudentIntoDB };

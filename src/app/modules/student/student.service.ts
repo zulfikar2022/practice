@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 import { Student } from './student.model';
 import { User } from '../user/user.model';
 import { TStudent } from './student.interface';
@@ -34,16 +34,38 @@ const getAllStudents = async () => {
 };
 
 const deleteFromDB = async (id: string) => {
-  const targetStudent: TStudent = (await Student.findOne({
-    _id: id,
-  })) as TStudent;
-  console.log(targetStudent);
+  let targetStudent: TStudent;
+  try {
+    targetStudent = (await Student.findOne({
+      _id: id,
+    })) as TStudent;
+  } catch (error) {
+    throw new Error('Student not found');
+  }
+
   const userId = targetStudent.user;
-  const result = await User.updateOne(
-    { _id: userId },
-    { $set: { isDeleted: true } },
-  );
-  return result;
+
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    await User.updateOne(
+      { _id: userId },
+      { $set: { isDeleted: true } },
+      { session },
+    );
+    await Student.updateOne(
+      { _id: id },
+      { $set: { isDeleted: true } },
+      { session },
+    );
+    await session.commitTransaction();
+    session.endSession();
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+  // return result;
 };
 
 const updateStudentIntoDB = async (id: string, student: TStudent) => {

@@ -3,8 +3,8 @@ import { app } from './app';
 import config from './app/config/index.js';
 
 mongoose
-  // .connect(config.database_url as string)
-  .connect('mongodb://localhost:27017/phUniversity')
+  .connect(config.database_url as string)
+  // .connect('mongodb://localhost:27017/phUniversity')
   .then(() => {
     console.log('database connected successfully');
     // console.log(`database name: ${mongoose.connection}`);
