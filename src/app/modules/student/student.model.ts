@@ -104,6 +104,20 @@ const studentSchema = new Schema<TStudent>({
     unique: true,
     ref: 'User',
   },
+  id: {
+    type: String,
+    required: [true, 'Student id is required'],
+    validate: {
+      validator: async function (value: string): Promise<boolean> {
+        const student: TStudent | null = await Student.findOne({
+          id: value,
+          isDeleted: false,
+        });
+        return student ? false : true;
+      },
+      message: 'Student id already exists',
+    },
+  },
   gender: {
     type: String,
     enum: {
@@ -167,7 +181,7 @@ const studentSchema = new Schema<TStudent>({
     type: Schema.Types.ObjectId,
     ref: 'AcademicSemester',
     validate: {
-      validator: async function (value: string) {
+      validator: async function (value: string): Promise<boolean> {
         const academicSemester = await AcademicSemester.findById(value);
         return academicSemester ? true : false;
       },

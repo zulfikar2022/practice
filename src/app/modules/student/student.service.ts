@@ -38,7 +38,7 @@ const deleteFromDB = async (id: string) => {
   let targetStudent: TStudent;
   try {
     targetStudent = (await Student.findOne({
-      _id: id,
+      id,
     })) as TStudent;
     if (!targetStudent) {
       throw new AppError(404, `Student not found with the id ${id}`);
@@ -53,7 +53,7 @@ const deleteFromDB = async (id: string) => {
   try {
     session.startTransaction();
     const deletedUser = await User.findOneAndUpdate(
-      { _id: userId },
+      { id },
       { isDeleted: true },
       { new: true, session },
     );
@@ -61,7 +61,7 @@ const deleteFromDB = async (id: string) => {
       throw new AppError(404, 'User not found');
     }
     const deletedStudent = await Student.findOneAndUpdate(
-      { _id: id },
+      { id },
       { isDeleted: true },
       { new: true, session },
     );

@@ -32,6 +32,7 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
       throw new AppError(500, 'User creation failed');
     }
     studentData.user = newUser[0]._id;
+    studentData.id = userData.id;
 
     // transaction-2
     const newStudent = await Student.create([studentData], { session });
