@@ -75,26 +75,37 @@ const deleteFromDB = async (id: string) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    throw error;
+    throw new Error('failed to delete student');
   }
   // return result;
 };
 
 const updateStudentIntoDB = async (id: string, student: TStudent) => {
-  const result = await Student.updateOne(
-    { id },
-    {
-      $set: {
-        name: student.name,
-        contactNumber: student.contactNumber,
-        emergencyContactNumber: student.emergencyContactNumber,
-        presentAddress: student.presentAddress,
-        guardian: student.guardian,
-        localGuardian: student.localGuardian,
-        profileImage: student.profileImage,
-      },
-    },
-  );
+  const { name, guardian, localGuardian, ...remainingStudentData } = student;
+  const modifiedUpdatedData: Record<string, unknown> = {
+    ...remainingStudentData,
+  };
+
+  if (name && Object.keys(name).length) {
+    for (const [key, value] of Object.entries(name)) {
+      modifiedUpdatedData[`name.${key}`] = value;
+    }
+  }
+  if (guardian && Object.keys(guardian).length) {
+    for (const [key, value] of Object.entries(guardian)) {
+      modifiedUpdatedData[`guardian.${key}`] = value;
+    }
+  }
+  if (localGuardian && Object.keys(localGuardian).length) {
+    for (const [key, value] of Object.entries(localGuardian)) {
+      modifiedUpdatedData[`localGuardian.${key}`] = value;
+    }
+  }
+
+  const result = await Student.findOneAndUpdate({ id }, modifiedUpdatedData, {
+    new: true,
+    runValidators: true,
+  });
   return result;
 };
 

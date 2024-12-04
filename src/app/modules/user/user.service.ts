@@ -48,6 +48,7 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
     console.log('transaction failed', error);
     await session.abortTransaction();
     await session.endSession();
+    throw new AppError(500, 'Student creation failed');
   }
 
   // setting manually generated id
