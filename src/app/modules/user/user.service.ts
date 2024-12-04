@@ -7,6 +7,7 @@ import { Student } from '../student/student.model';
 import { NewUser, TUser } from './user.interface';
 import { User } from './user.model';
 import { generateStudentId } from './user.utils';
+import { AppError } from '../../errors/AppError';
 
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   let userData: Partial<TUser> = {} as NewUser;
@@ -38,12 +39,12 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
         return newStudent;
       } catch (error: any) {
         await User.deleteOne({ id: newUser.id });
-        throw new Error('Error while creating a student');
+        throw new AppError(500, 'Error while creating a student');
       }
     }
   } catch (error) {
     console.log(error);
-    throw new Error('Error while creating a user');
+    throw new AppError(500, 'Error while creating a user');
   }
 };
 
