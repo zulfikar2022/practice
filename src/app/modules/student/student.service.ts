@@ -2,6 +2,7 @@ import mongoose, { ObjectId } from 'mongoose';
 import { Student } from './student.model';
 import { User } from '../user/user.model';
 import { TStudent } from './student.interface';
+import { AppError } from '../../errors/AppError';
 
 const getStudentById = async (id: ObjectId) => {
   const student = await Student.findById(id)
@@ -39,8 +40,11 @@ const deleteFromDB = async (id: string) => {
     targetStudent = (await Student.findOne({
       _id: id,
     })) as TStudent;
+    if (!targetStudent) {
+      throw new AppError(404, `Student not found with the id ${id}`);
+    }
   } catch (error) {
-    throw new Error('Student not found');
+    throw new AppError(404, 'some Error occurred');
   }
 
   const userId = targetStudent.user;
@@ -48,18 +52,26 @@ const deleteFromDB = async (id: string) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-    await User.updateOne(
+    const deletedUser = await User.findOneAndUpdate(
       { _id: userId },
-      { $set: { isDeleted: true } },
-      { session },
+      { isDeleted: true },
+      { new: true, session },
     );
-    await Student.updateOne(
+    if (!deletedUser) {
+      throw new AppError(404, 'User not found');
+    }
+    const deletedStudent = await Student.findOneAndUpdate(
       { _id: id },
-      { $set: { isDeleted: true } },
-      { session },
+      { isDeleted: true },
+      { new: true, session },
     );
+    if (!deletedStudent) {
+      throw new AppError(404, 'Student not found');
+    }
+
     await session.commitTransaction();
     session.endSession();
+    return deletedStudent;
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
