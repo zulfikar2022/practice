@@ -4,8 +4,8 @@ import { User } from '../user/user.model';
 import { TStudent } from './student.interface';
 import { AppError } from '../../errors/AppError';
 
-const getStudentById = async (id: ObjectId) => {
-  const student = await Student.findById(id)
+const getStudentById = async (id: string) => {
+  const student = await Student.find({ id })
     .populate('admissionSemester')
     .populate({
       path: 'user',
@@ -82,7 +82,7 @@ const deleteFromDB = async (id: string) => {
 
 const updateStudentIntoDB = async (id: string, student: TStudent) => {
   const result = await Student.updateOne(
-    { _id: id },
+    { id },
     {
       $set: {
         name: student.name,

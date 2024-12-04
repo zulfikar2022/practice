@@ -5,10 +5,10 @@ import { catchAsync } from '../../utils/catchAsync';
 // creating a schema validation using joi
 
 const getStudent = catchAsync(async (req, res) => {
-  const id: Schema.Types.ObjectId = new Types.ObjectId(
-    req.params.id,
-  ) as unknown as Schema.Types.ObjectId;
-
+  // const id: Schema.Types.ObjectId = new Types.ObjectId(
+  // req.params.id,
+  // ) as unknown as Schema.Types.ObjectId;
+  const id = req.params.id;
   const student = await StudentServices.getStudentById(id);
   res.status(200).json({
     message: 'Student data got successfully',
