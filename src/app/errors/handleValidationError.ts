@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
-import { TErrorSource } from '../interface/error';
+import { TErrorResponse, TErrorSource } from '../interface/error';
 import config from '../config';
 
 export const handleValidationError = (
   error: mongoose.Error.ValidationError,
-) => {
+): TErrorResponse => {
   let statusCode = 400;
   let message = error.message || 'Validation Error';
   let errorSources: TErrorSource = [];
@@ -20,6 +20,6 @@ export const handleValidationError = (
     statusCode,
     message,
     errorSources,
-    stack: config.node_env === 'development' ? error.stack : null,
+    stack: config.node_env === 'development' ? (error.stack ?? null) : null,
   };
 };

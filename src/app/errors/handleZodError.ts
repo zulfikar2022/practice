@@ -1,7 +1,8 @@
 import { ZodError, ZodIssue } from 'zod';
 import config from '../config';
+import { TErrorResponse } from '../interface/error';
 
-export const handleZodError = (err: ZodError) => {
+export const handleZodError = (err: ZodError): TErrorResponse => {
   const statusCode = 400;
   let errorSources = err.issues.map((issue: ZodIssue) => {
     return {
@@ -15,6 +16,6 @@ export const handleZodError = (err: ZodError) => {
     statusCode,
     message: 'Validation Error',
     errorSources,
-    stack: config.node_env === 'development' ? err.stack : null,
+    stack: config.node_env === 'development' ? (err.stack ?? null) : null,
   };
 };
