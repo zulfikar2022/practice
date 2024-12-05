@@ -15,10 +15,7 @@ const academicDepartmentSchema = new mongoose.Schema<TAcadmicDepartment>({
     validate: {
       validator: async function (value: string) {
         const academicFaculty = await AcademicFaculty.findById(value);
-        if (!academicFaculty) {
-          return false;
-        }
-        return true;
+        return academicFaculty instanceof AcademicFaculty;
       },
       message: 'Academic Faculty does not exist',
     },

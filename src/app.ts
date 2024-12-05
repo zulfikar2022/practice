@@ -1,6 +1,7 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import router from './app/routes/index.js';
+import { globalErrorHandler } from './app/middlewares/globalErrorHandler.js';
 
 export const app: Application = express();
 app.use(express.json());
@@ -14,11 +15,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  res.status(error?.status || 500).send({
-    success: false,
-    message: error.message,
-    error: error,
-  });
+  globalErrorHandler(error, req, res, next);
 });
 
 app.all('*', (req: Request, res: Response) => {
