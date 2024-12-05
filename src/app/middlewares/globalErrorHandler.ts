@@ -34,9 +34,12 @@ export const globalErrorHandler: ErrorRequestHandler = (
   if (err instanceof ZodError) {
     simplifiedError = handleZodError(err);
     res.status(simplifiedError.statusCode).json(simplifiedError);
+    return;
   } else if (err instanceof ValidationError) {
     simplifiedError = handleValidationError(err);
     res.status(simplifiedError.statusCode).json(simplifiedError);
+    return;
   }
+
   res.status(statusCode).json(err);
 };

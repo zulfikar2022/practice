@@ -9,6 +9,7 @@ import { User } from './user.model';
 import { generateStudentId } from './user.utils';
 import { AppError } from '../../errors/AppError';
 import mongoose from 'mongoose';
+import { NextFunction } from 'express';
 
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   let userData: Partial<TUser> = {} as NewUser;
@@ -45,13 +46,10 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
 
     return newStudent;
   } catch (error) {
-    console.log('transaction failed', error);
     await session.abortTransaction();
     await session.endSession();
-    throw new AppError(500, 'Student creation failed');
+    throw error;
   }
-
-  // setting manually generated id
 };
 
 export const UserServices = { createStudentIntoDB };

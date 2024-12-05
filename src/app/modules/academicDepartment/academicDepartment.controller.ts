@@ -23,18 +23,27 @@ const getAllAcademicDepartments = catchAsync(async (req, res) => {
   });
 });
 
-const getSpecificAcademicDepartment = catchAsync(async (req, res) => {
-  const academicDepartment =
-    await academicDepartmentService.getSpecificAcademicDepartmentFromDB(
-      req.params.id,
-    );
-  res.status(200).json({
-    status: 'success',
-    data: {
-      academicDepartment,
-    },
-  });
-});
+const getSpecificAcademicDepartment = catchAsync(
+  async (req, res): Promise<void> => {
+    const academicDepartment =
+      await academicDepartmentService.getSpecificAcademicDepartmentFromDB(
+        req.params.id,
+      );
+    if (!academicDepartment) {
+      res.status(404).json({
+        status: 'fail',
+        message: 'No academic department found with that ID',
+      });
+      return;
+    }
+    res.status(200).json({
+      status: 'success',
+      data: {
+        academicDepartment,
+      },
+    });
+  },
+);
 
 const updateAcademicDepartment = catchAsync(async (req, res) => {
   const academicDepartment =
