@@ -19,8 +19,38 @@ const getStudentById = async (id: string) => {
   return student;
 };
 
-const getAllStudents = async () => {
-  const students = await Student.find({})
+const getAllStudents = async (query: Record<string, string>) => {
+  let searchTerm = '';
+  if (query?.searchTerm) {
+    searchTerm = query.searchTerm;
+  }
+  const studentSearchableFields = [
+    'email',
+    'contactNumber',
+    'emergencyContactNumber',
+    'id',
+  ];
+  /*
+  {
+    $or: studentSearchableFields.map((field) => {
+      return { [field]: { $regex: searchTerm, $options: 'i' } };
+    }),
+  }
+  */
+
+  const searchQuery = studentSearchableFields.map((field) => {
+    return { [field]: { $regex: searchTerm, $options: 'i' } };
+  });
+
+  const excludeFields = ['searchTerm'];
+  let queryParams: Record<string, unknown> = {};
+  Object.keys(query).forEach((key) => {
+    if (!excludeFields.includes(key)) {
+      queryParams[key] = query[key];
+    }
+  });
+  const students = await Student.find({ $or: searchQuery })
+    .find(queryParams)
     .populate({ path: 'admissionSemester' })
     .populate({
       path: 'user',
