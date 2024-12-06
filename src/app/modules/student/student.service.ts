@@ -30,27 +30,20 @@ const getAllStudents = async (query: Record<string, string>) => {
     'emergencyContactNumber',
     'id',
   ];
-  /*
-  {
-    $or: studentSearchableFields.map((field) => {
-      return { [field]: { $regex: searchTerm, $options: 'i' } };
-    }),
-  }
-  */
 
   const searchQuery = studentSearchableFields.map((field) => {
     return { [field]: { $regex: searchTerm, $options: 'i' } };
   });
 
   const excludeFields = ['searchTerm'];
-  let queryParams: Record<string, unknown> = {};
+  let filterQuery: Record<string, unknown> = {};
   Object.keys(query).forEach((key) => {
     if (!excludeFields.includes(key)) {
-      queryParams[key] = query[key];
+      filterQuery[key] = query[key];
     }
   });
   const students = await Student.find({ $or: searchQuery })
-    .find(queryParams)
+    .find(filterQuery)
     .populate({ path: 'admissionSemester' })
     .populate({
       path: 'user',
