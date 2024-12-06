@@ -22,15 +22,15 @@ const academicDepartmentSchema = new mongoose.Schema<TAcadmicDepartment>({
   },
 });
 
-academicDepartmentSchema.pre<TAcadmicDepartment>('save', async function (next) {
-  const isDepartmentExist = await AcademicDepartment.findOne({
-    name: this.name,
-  });
-  if (isDepartmentExist) {
-    throw new Error('This department already exists');
-  }
-  next();
-});
+// academicDepartmentSchema.pre<TAcadmicDepartment>('save', async function (next) {
+//   const isDepartmentExist = await AcademicDepartment.findOne({
+//     name: this.name,
+//   });
+//   if (isDepartmentExist) {
+//     throw new Error('This department already exists');
+//   }
+//   next();
+// });
 
 export const AcademicDepartment = mongoose.model<TAcadmicDepartment>(
   'AcademicDepartment',

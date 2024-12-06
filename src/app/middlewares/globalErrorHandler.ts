@@ -7,6 +7,7 @@ import { handleZodError } from '../errors/handleZodError';
 import { handleValidationError } from '../errors/handleValidationError';
 import { handleCastErrorDB } from '../errors/handleCastError';
 import { handleDuplicateError } from '../errors/handleDuplicateError';
+import { AppError } from '../errors/AppError';
 const { ValidationError } = MongooseError;
 
 export const globalErrorHandler: ErrorRequestHandler = (
@@ -49,8 +50,33 @@ export const globalErrorHandler: ErrorRequestHandler = (
     simplifiedError = handleDuplicateError(err);
     res.status(simplifiedError.statusCode).json(simplifiedError);
     return;
+  } else if (err instanceof Error) {
+    simplifiedError = {
+      success: false,
+      statusCode,
+      message,
+      errorSources: [
+        {
+          path: '',
+          message: err.message,
+        },
+      ],
+      stack: config.node_env === 'development' ? (err.stack ?? null) : null,
+    };
+  } else if (err instanceof AppError) {
+    simplifiedError = {
+      success: false,
+      statusCode: err.statusCode,
+      message: err.message,
+      errorSources: [
+        {
+          path: '',
+          message: err.message,
+        },
+      ],
+      stack: config.node_env === 'development' ? (err.stack ?? null) : null,
+    };
   }
 
   res.status(statusCode).json(simplifiedError);
-  // res.status(statusCode).json(err);
 };
