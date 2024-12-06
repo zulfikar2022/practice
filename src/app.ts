@@ -10,9 +10,12 @@ app.use(cors());
 //application routes
 app.use('/api/v1/', router);
 
-app.get('/', (req: Request, res: Response) => {
-  res.status(200).send({ message: 'success fully received message' });
-});
+const test = async (req: Request, res: Response) => {
+  Promise.reject();
+};
+
+// test route
+app.get('/', test);
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   globalErrorHandler(error, req, res, next);
