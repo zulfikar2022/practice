@@ -1,10 +1,11 @@
 import { ErrorRequestHandler } from 'express';
 import { ZodError, ZodIssue } from 'zod';
-import { TErrorSource } from '../interface/error';
+import { TErrorResponse, TErrorSource } from '../interface/error';
 import config from '../config';
 import mongoose, { Error as MongooseError } from 'mongoose';
 import { handleZodError } from '../errors/handleZodError';
 import { handleValidationError } from '../errors/handleValidationError';
+import { handleCastErrorDB } from '../errors/handleCastError';
 const { ValidationError } = MongooseError;
 
 export const globalErrorHandler: ErrorRequestHandler = (
@@ -37,6 +38,10 @@ export const globalErrorHandler: ErrorRequestHandler = (
     return;
   } else if (err instanceof ValidationError) {
     simplifiedError = handleValidationError(err);
+    res.status(simplifiedError.statusCode).json(simplifiedError);
+    return;
+  } else if (err instanceof mongoose.Error.CastError) {
+    simplifiedError = handleCastErrorDB(err);
     res.status(simplifiedError.statusCode).json(simplifiedError);
     return;
   }
