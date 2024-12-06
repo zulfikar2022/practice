@@ -35,15 +35,23 @@ const getAllStudents = async (query: Record<string, string>) => {
     return { [field]: { $regex: searchTerm, $options: 'i' } };
   });
 
-  const excludeFields = ['searchTerm'];
+  const excludeFields = ['searchTerm', 'sort', 'limit'];
   let filterQuery: Record<string, unknown> = {};
+  let sort = '-createdAt';
+  let limit = query?.limit ? parseInt(query.limit) : 10;
+  if (query?.sort) {
+    sort = query.sort;
+  }
   Object.keys(query).forEach((key) => {
     if (!excludeFields.includes(key)) {
       filterQuery[key] = query[key];
     }
   });
+
   const students = await Student.find({ $or: searchQuery })
     .find(filterQuery)
+    .sort(sort)
+    .limit(limit)
     .populate({ path: 'admissionSemester' })
     .populate({
       path: 'user',
