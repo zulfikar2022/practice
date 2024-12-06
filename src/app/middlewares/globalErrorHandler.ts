@@ -6,6 +6,7 @@ import mongoose, { Error as MongooseError } from 'mongoose';
 import { handleZodError } from '../errors/handleZodError';
 import { handleValidationError } from '../errors/handleValidationError';
 import { handleCastErrorDB } from '../errors/handleCastError';
+import { handleDuplicateError } from '../errors/handleDuplicateError';
 const { ValidationError } = MongooseError;
 
 export const globalErrorHandler: ErrorRequestHandler = (
@@ -44,7 +45,12 @@ export const globalErrorHandler: ErrorRequestHandler = (
     simplifiedError = handleCastErrorDB(err);
     res.status(simplifiedError.statusCode).json(simplifiedError);
     return;
+  } else if (err.code === 11000) {
+    simplifiedError = handleDuplicateError(err);
+    res.status(simplifiedError.statusCode).json(simplifiedError);
+    return;
   }
 
   res.status(statusCode).json(simplifiedError);
+  // res.status(statusCode).json(err);
 };
