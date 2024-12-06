@@ -35,7 +35,7 @@ const getAllStudents = async (query: Record<string, string>) => {
     return { [field]: { $regex: searchTerm, $options: 'i' } };
   });
 
-  const excludeFields = ['searchTerm', 'sort', 'limit'];
+  const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
   let filterQuery: Record<string, unknown> = {};
   let sort = '-createdAt';
   let limit = query?.limit ? parseInt(query.limit) : 10;
@@ -48,10 +48,28 @@ const getAllStudents = async (query: Record<string, string>) => {
     }
   });
 
+  // pagination
+  let page = query?.page ? parseInt(query.page) : 1;
+  if (page < 1) {
+    page = 1;
+  }
+  limit = limit > 0 ? limit : 10;
+  let skip = (page - 1) * limit;
+
+  let selectedFields = '-__v';
+  if (query?.fields) {
+    selectedFields = query.fields
+      .split(',')
+      .map((field) => field.trim())
+      .join(' ');
+  }
+
   const students = await Student.find({ $or: searchQuery })
     .find(filterQuery)
     .sort(sort)
+    .skip(skip)
     .limit(limit)
+    .select(selectedFields)
     .populate({ path: 'admissionSemester' })
     .populate({
       path: 'user',
