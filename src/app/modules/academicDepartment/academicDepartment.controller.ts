@@ -1,7 +1,7 @@
 import { catchAsync } from '../../utils/catchAsync';
 import { academicDepartmentService } from './academicDepartment.service';
 
-const createAcademicDepartment = catchAsync(async (req, res) => {
+const createAcademicDepartment = catchAsync(async (req, res, next) => {
   const academicDepartment =
     await academicDepartmentService.createAcademicDepartmentIntoDB(req.body);
   res.status(201).json({

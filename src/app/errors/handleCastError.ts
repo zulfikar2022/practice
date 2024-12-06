@@ -5,11 +5,11 @@ import config from '../config';
 export const handleCastErrorDB = (
   err: mongoose.Error.CastError,
 ): TErrorResponse => {
-  const message = err.message;
+  const message = `Invalid ${err.path}: ${err.value._id}`;
   const errorSource: TErrorSource = [
     {
       path: err.path,
-      message,
+      message: err.message,
     },
   ];
   return {

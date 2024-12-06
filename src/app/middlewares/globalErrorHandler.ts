@@ -46,5 +46,5 @@ export const globalErrorHandler: ErrorRequestHandler = (
     return;
   }
 
-  res.status(statusCode).json(err);
+  res.status(statusCode).json(simplifiedError);
 };
