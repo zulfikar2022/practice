@@ -3,6 +3,7 @@ import { Student } from './student.model';
 import { User } from '../user/user.model';
 import { TStudent } from './student.interface';
 import { AppError } from '../../errors/AppError';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const getStudentById = async (id: string) => {
   const student = await Student.find({ id })
@@ -20,66 +21,23 @@ const getStudentById = async (id: string) => {
 };
 
 const getAllStudents = async (query: Record<string, string>) => {
-  let searchTerm = '';
-  if (query?.searchTerm) {
-    searchTerm = query.searchTerm;
-  }
-  const studentSearchableFields = [
-    'email',
-    'contactNumber',
-    'emergencyContactNumber',
-    'id',
-  ];
+  const studentSearchableFields = ['email', 'name.firstName', 'presentAddress'];
+  const studentQuery = new QueryBuilder(
+    Student.find()
+      .populate('admissionSemester')
+      .populate({
+        path: 'academicDepartment',
+        populate: { path: 'academicFaculty' },
+      }),
+    query,
+  )
+    .search(studentSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-  const searchQuery = studentSearchableFields.map((field) => {
-    return { [field]: { $regex: searchTerm, $options: 'i' } };
-  });
-
-  const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
-  let filterQuery: Record<string, unknown> = {};
-  let sort = '-createdAt';
-  let limit = query?.limit ? parseInt(query.limit) : 10;
-  if (query?.sort) {
-    sort = query.sort;
-  }
-  Object.keys(query).forEach((key) => {
-    if (!excludeFields.includes(key)) {
-      filterQuery[key] = query[key];
-    }
-  });
-
-  // pagination
-  let page = query?.page ? parseInt(query.page) : 1;
-  if (page < 1) {
-    page = 1;
-  }
-  limit = limit > 0 ? limit : 10;
-  let skip = (page - 1) * limit;
-
-  let selectedFields = '-__v';
-  if (query?.fields) {
-    selectedFields = query.fields
-      .split(',')
-      .map((field) => field.trim())
-      .join(' ');
-  }
-
-  const students = await Student.find({ $or: searchQuery })
-    .find(filterQuery)
-    .sort(sort)
-    .skip(skip)
-    .limit(limit)
-    .select(selectedFields)
-    .populate({ path: 'admissionSemester' })
-    .populate({
-      path: 'user',
-      select:
-        '_id id role needsPasswordChange status isDeleted createdAt updatedAt',
-    })
-    .populate({
-      path: 'academicDepartment',
-      populate: { path: 'academicFaculty' },
-    });
+  const students = await studentQuery.modelQuery;
   return students;
 };
 
