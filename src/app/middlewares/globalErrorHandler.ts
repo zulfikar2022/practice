@@ -1,6 +1,6 @@
 import { ErrorRequestHandler } from 'express';
-import { ZodError, ZodIssue } from 'zod';
-import { TErrorResponse, TErrorSource } from '../interface/error';
+import { ZodError } from 'zod';
+import { TErrorSource } from '../interface/error';
 import config from '../config';
 import mongoose, { Error as MongooseError } from 'mongoose';
 import { handleZodError } from '../errors/handleZodError';

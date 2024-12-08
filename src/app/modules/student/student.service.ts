@@ -1,4 +1,4 @@
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 import { Student } from './student.model';
 import { User } from '../user/user.model';
 import { TStudent } from './student.interface';
