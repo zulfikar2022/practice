@@ -10,6 +10,9 @@ import { generateStudentId } from './user.utils';
 import { AppError } from '../../errors/AppError';
 import mongoose from 'mongoose';
 import { NextFunction } from 'express';
+import { TFaculty } from '../faculty/faculty.interface';
+import createFacultyId from '../../utils/createFacultyId';
+import { Faculty } from '../faculty/faculty.model';
 
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   let userData: Partial<TUser> = {} as NewUser;
@@ -52,4 +55,45 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   }
 };
 
-export const UserServices = { createStudentIntoDB };
+const createFacultyIntoDB = async (
+  password: string,
+  facultyData: Partial<TFaculty>,
+) => {
+  let userData: Partial<TUser> = {} as NewUser;
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const facultyId = await createFacultyId();
+    userData.password = password || (config.default_password as string);
+    userData.role = 'faculty';
+    userData.id = facultyId;
+
+    // transaction-1
+    console.log('inside the createFacultyIntoDB service');
+    const newUser = await User.create([userData], { session });
+    if (!newUser.length) {
+      throw new AppError(500, 'User creation failed');
+    }
+    facultyData.user = newUser[0]._id;
+    facultyData.id = facultyId;
+
+    // transaction-2
+    const newFaculty = await Faculty.create([facultyData], { session });
+
+    if (!newFaculty.length) {
+      throw new AppError(500, 'Faculty creation failed');
+    }
+    await session.commitTransaction();
+    await session.endSession();
+
+    return newFaculty;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
+  }
+};
+
+export const UserServices = { createStudentIntoDB, createFacultyIntoDB };

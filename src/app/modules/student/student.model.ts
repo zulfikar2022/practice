@@ -11,7 +11,7 @@ import { z } from 'zod';
 import { AcademicSemester } from '../academicSemester/academicSemester.model';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 
-const userNameSchema = new Schema<UserName>(
+export const userNameSchema = new Schema<UserName>(
   {
     firstName: {
       type: String,

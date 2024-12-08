@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
-const createUserNameValidationSchema = z.object({
+export const createUserNameValidationSchema = z.object({
   firstName: z.string().min(1).max(20),
   middleName: z.string().optional(),
   lastName: z.string(),
 });
 
-const updateUsernameValidationSchema = z.object({
+export const updateUsernameValidationSchema = z.object({
   firstName: z.string().min(1).max(20).optional(),
   middleName: z.string().optional(),
   lastName: z.string().optional(),
