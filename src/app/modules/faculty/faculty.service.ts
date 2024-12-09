@@ -48,8 +48,11 @@ const updateFacultyInDB = async (
   }
 };
 
+const deleteFacultyFromDB = async () => {};
+
 export const facultyServices = {
   getAllFacultyFromDB,
   getSpecificFacultyFromDB,
   updateFacultyInDB,
+  deleteFacultyFromDB,
 };

@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import { TFaculty } from './faculty.interface';
 import { userNameSchema } from '../student/student.model';
+import { AcademicFaculty } from '../academicFaculty/academicFaculty.model';
+import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 
 const faculty = new mongoose.Schema<TFaculty>(
   {
@@ -67,11 +69,27 @@ const faculty = new mongoose.Schema<TFaculty>(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: 'AcademicFaculty',
+      validate: {
+        validator: async (value) => {
+          const academicFAculty = await AcademicFaculty.findOne({ _id: value });
+          return !!academicFAculty;
+        },
+        message: "Academic faculty doesn't exist",
+      },
     },
     academicDepartment: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: 'AcademicDepartment',
+      validate: {
+        validator: async (value) => {
+          const academicDepartment = await AcademicDepartment.findOne({
+            _id: value,
+          });
+          return !!academicDepartment;
+        },
+        message: "Academic Department doesn't exist",
+      },
     },
     isDeleted: {
       type: Boolean,

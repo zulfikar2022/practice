@@ -34,8 +34,13 @@ const updateFaculty = async (req: Request, res: Response) => {
   }
 };
 
+const deleteFaculty = async (req: Request, res: Response) => {
+  const facultyId = req.params.facultyId;
+};
+
 export const facultyController = {
   getAllFaculty,
   getSpecificFaculty,
   updateFaculty,
+  deleteFaculty,
 };
