@@ -54,9 +54,16 @@ const deleteCourseFromDB = async (id: string) => {
 };
 
 const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
+  const { preRequisiteCourses, ...courseRemainingData } = payload;
+
+  // step-1: Basic course info update
   try {
-    const result = await Course.findByIdAndUpdate(id, payload, { new: true });
-    return result;
+    const updateBasicCourseInfo = await Course.findByIdAndUpdate(
+      id,
+      courseRemainingData,
+      { new: true, runValidators: true },
+    );
+    return updateBasicCourseInfo;
   } catch (error) {
     throw new Error((error as Error).message);
   }

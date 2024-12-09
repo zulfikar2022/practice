@@ -3,10 +3,7 @@ const preRequisiteCourseCreateValidationSchema = z.object({
   course: z.string(),
   isDeleted: z.boolean().optional(),
 });
-// const preRequisiteCourseUpdateValidationSchema = z.object({
-//   course: z.string().optional(),
-//   isDeleted: z.boolean().optional(),
-// });
+
 const createCourseValidationSchema = z
   .object({
     title: z.string(),
