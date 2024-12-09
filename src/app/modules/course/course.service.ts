@@ -31,7 +31,9 @@ const getAllCoursesFromDB = async (query: Record<string, unknown>) => {
 
 const getSingleCourseFromDB = async (id: string) => {
   try {
-    const result = await Course.findById(id);
+    const result = await Course.findById(id).populate(
+      'preRequisiteCourses.course',
+    );
     return result;
   } catch (error) {
     throw new Error((error as Error).message);
