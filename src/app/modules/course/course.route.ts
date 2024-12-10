@@ -22,6 +22,7 @@ router.patch(
 );
 router.put(
   '/:courseID/assign-faculties',
+  validateRequest(courseValidations.assignFacultiesWithCourseValidationSchema),
   CourseControllers.assignFacultiesWithCourse,
 );
 

@@ -127,16 +127,22 @@ const assignFacultiesWithCourseIntoDB = async (
   payload: Partial<TCourseFaculty>,
 ) => {
   try {
-    let result = await CourseFaculty.findByIdAndUpdate(
+    const result = await CourseFaculty.findByIdAndUpdate(
       courseID,
-      { $addToSet: { faculties: { $each: payload } } },
+      {
+        course: courseID,
+        $addToSet: { faculties: { $each: payload } },
+      },
       {
         new: true,
         upsert: true,
       },
     );
-    result.course = courseID;
-    result = await result.save();
+
+    if (!result) {
+      throw new Error('Failed to assign faculties with course');
+    }
+
     return result;
   } catch (error) {
     throw new Error((error as Error).message);
