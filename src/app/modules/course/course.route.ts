@@ -12,13 +12,17 @@ router.post(
   CourseControllers.createCourse,
 );
 
-router.get('/:id', CourseControllers.getSingleCourse);
 router.get('/', CourseControllers.getAllCourses);
+router.get('/:id', CourseControllers.getSingleCourse);
 router.delete('/:id', CourseControllers.deleteCourse);
 router.patch(
   '/:id',
   validateRequest(courseValidations.updateCourseValidationSchema),
   CourseControllers.updateCourse,
+);
+router.put(
+  '/:courseID/assign-faculties',
+  CourseControllers.assignFacultiesWithCourse,
 );
 
 export const courseRoute = router;

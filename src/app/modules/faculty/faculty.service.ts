@@ -13,7 +13,7 @@ const getAllFacultyFromDB = async () => {
 
 const getSpecificFacultyFromDB = async (facultyId: string) => {
   try {
-    const faculty = await Faculty.find({ id: facultyId });
+    const faculty = await Faculty.find({ _id: facultyId });
     return faculty;
   } catch (error) {
     throw error;

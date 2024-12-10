@@ -1,7 +1,9 @@
+import mongoose from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { courseSearchableFields } from './course.constants';
-import { TCourse } from './course.interface';
-import { Course } from './course.model';
+import { TCourse, TCourseFaculty } from './course.interface';
+import { Course, CourseFaculty } from './course.model';
+import { AppError } from '../../errors/AppError';
 
 const createCourseIntoDB = async (payload: TCourse) => {
   try {
@@ -57,12 +59,17 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
   const { preRequisiteCourses, ...courseRemainingData } = payload;
 
   // step-1: Basic course info update
+  const session = await mongoose.startSession();
   try {
+    session.startTransaction();
     const updateBasicCourseInfo = await Course.findByIdAndUpdate(
       id,
       courseRemainingData,
-      { new: true, runValidators: true },
+      { new: true, runValidators: true, session },
     );
+    if (!updateBasicCourseInfo) {
+      throw new Error("Failed to update course's basic information");
+    }
     let newPrerequisiteCourses;
     let deletedPrerequisiteCourses;
     // check if there is any prerequisite course to update
@@ -78,13 +85,16 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
       );
       console.log(newPrerequisites);
 
-      const newPrerequisiteCourses = await Course.findByIdAndUpdate(
+      newPrerequisiteCourses = await Course.findByIdAndUpdate(
         id,
         {
           $addToSet: { preRequisiteCourses: { $each: newPrerequisites } },
         },
-        { new: true },
+        { new: true, session },
       );
+      if (!newPrerequisiteCourses) {
+        throw new Error("Failed to update course's prerequisite courses");
+      }
 
       deletedPrerequisiteCourses = await Course.findByIdAndUpdate(
         id,
@@ -93,11 +103,37 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
             preRequisiteCourses: { course: { $in: deletedPrerequisites } },
           },
         },
-        { new: true },
+        { new: true, session },
       );
+      if (!deletedPrerequisiteCourses) {
+        throw new Error("Failed to delete course's prerequisite courses");
+      }
     }
     const result = await Course.findById(id).populate(
       'preRequisiteCourses.course',
+    );
+    await session.commitTransaction();
+    session.endSession();
+    return result;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw new Error((error as Error).message);
+  }
+};
+
+const assignFacultiesWithCourseIntoDB = async (
+  courseID: string,
+  payload: Partial<TCourseFaculty>,
+) => {
+  try {
+    const result = await CourseFaculty.findByIdAndUpdate(
+      courseID,
+      { $addToSet: { faculties: { $each: payload } } },
+      {
+        new: true,
+        upsert: true,
+      },
     );
     return result;
   } catch (error) {
@@ -111,4 +147,5 @@ export const CourseServices = {
   getSingleCourseFromDB,
   deleteCourseFromDB,
   updateCourseIntoDB,
+  assignFacultiesWithCourseIntoDB,
 };
