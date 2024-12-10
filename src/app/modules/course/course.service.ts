@@ -123,11 +123,11 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
 };
 
 const assignFacultiesWithCourseIntoDB = async (
-  courseID: string,
+  courseID: mongoose.Types.ObjectId,
   payload: Partial<TCourseFaculty>,
 ) => {
   try {
-    const result = await CourseFaculty.findByIdAndUpdate(
+    let result = await CourseFaculty.findByIdAndUpdate(
       courseID,
       { $addToSet: { faculties: { $each: payload } } },
       {
@@ -135,6 +135,8 @@ const assignFacultiesWithCourseIntoDB = async (
         upsert: true,
       },
     );
+    result.course = courseID;
+    result = await result.save();
     return result;
   } catch (error) {
     throw new Error((error as Error).message);

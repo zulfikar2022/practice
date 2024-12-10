@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { catchAsync } from '../../utils/catchAsync';
 import { CourseServices } from './course.service';
 
@@ -57,7 +58,7 @@ const assignFacultiesWithCourse = catchAsync(async (req, res) => {
   const { faculties } = req.body;
   try {
     const result = await CourseServices.assignFacultiesWithCourseIntoDB(
-      courseID,
+      new mongoose.Types.ObjectId(courseID),
       faculties,
     );
     res.status(200).json({
