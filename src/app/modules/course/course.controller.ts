@@ -71,6 +71,24 @@ const assignFacultiesWithCourse = catchAsync(async (req, res) => {
   }
 });
 
+const removeFacultiesFromCourse = catchAsync(async (req, res) => {
+  const { courseID } = req.params;
+  const { faculties } = req.body;
+  try {
+    const result = await CourseServices.removeFacultiesFromCourseIntoDB(
+      new mongoose.Types.ObjectId(courseID),
+      faculties,
+    );
+    res.status(200).json({
+      success: true,
+      data: result,
+      message: 'Faculties are removed from course successfully!',
+    });
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+});
+
 export const CourseControllers = {
   createCourse,
   getAllCourses,
@@ -78,4 +96,5 @@ export const CourseControllers = {
   deleteCourse,
   updateCourse,
   assignFacultiesWithCourse,
+  removeFacultiesFromCourse,
 };

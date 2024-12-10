@@ -148,6 +148,29 @@ const assignFacultiesWithCourseIntoDB = async (
     throw new Error((error as Error).message);
   }
 };
+const removeFacultiesFromCourseIntoDB = async (
+  courseID: mongoose.Types.ObjectId,
+  payload: Partial<TCourseFaculty>,
+) => {
+  try {
+    const result = await CourseFaculty.findByIdAndUpdate(
+      courseID,
+      {
+        course: courseID,
+        $pull: { faculties: { $in: payload } },
+      },
+      {
+        new: true,
+      },
+    );
+    if (!result) {
+      throw new Error('Failed to remove faculties from course');
+    }
+    return result;
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+};
 
 export const CourseServices = {
   createCourseIntoDB,
@@ -156,4 +179,5 @@ export const CourseServices = {
   deleteCourseFromDB,
   updateCourseIntoDB,
   assignFacultiesWithCourseIntoDB,
+  removeFacultiesFromCourseIntoDB,
 };
