@@ -1,6 +1,7 @@
-import { Error } from 'mongoose';
+import mongoose, { Error } from 'mongoose';
 import { Faculty } from './faculty.model';
 import { TFaculty } from './faculty.interface';
+import { User } from '../user/user.model';
 
 const getAllFacultyFromDB = async () => {
   try {
@@ -48,7 +49,43 @@ const updateFacultyInDB = async (
   }
 };
 
-const deleteFacultyFromDB = async () => {};
+const deleteFacultyFromDB = async (id: string) => {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    // first update the 'faculties' collection
+    const updatingAtFaculty = await Faculty.findByIdAndUpdate(
+      id,
+      {
+        $set: { isDeleted: true },
+      },
+      { new: true },
+    );
+    if (!updatingAtFaculty) {
+      throw new Error('Deleting faculty failed');
+    }
+    const userId = updatingAtFaculty.user;
+
+    const updatingAtUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          isDeleted: true,
+        },
+      },
+      { new: true },
+    );
+    if (!updatingAtUser) {
+      throw new Error('Deleting faculty failed');
+    }
+    session.commitTransaction();
+    session.endSession();
+  } catch (error) {
+    session.abortTransaction();
+    session.endSession();
+    throw new Error((error as Error).message);
+  }
+};
 
 export const facultyServices = {
   getAllFacultyFromDB,
