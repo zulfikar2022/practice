@@ -24,7 +24,8 @@ const createSemesterRegistrationIntoDB = async (
 
 const getAllSemesterRegistrationsFromDB = async () => {
   try {
-    const result = await SemesterRegistration.find();
+    const result =
+      await SemesterRegistration.find().populate('academicSemester');
     return result;
   } catch (error) {
     throw new Error((error as Error).message);
@@ -40,7 +41,19 @@ const getSingleSemesterRegistrationFromDB = async (id: string) => {
   }
 };
 
-const updateSemesterRegistrationInDB = async () => {};
+const updateSemesterRegistrationInDB = async (
+  id: string,
+  payload: Partial<TSemesterRegistration>,
+) => {
+  try {
+    const result = await SemesterRegistration.findByIdAndUpdate(id, payload, {
+      new: true,
+    });
+    return result;
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+};
 
 export const SemesterRegistrationService = {
   createSemesterRegistrationIntoDB,
