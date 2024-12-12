@@ -14,6 +14,19 @@ const createSemesterRegistrationIntoDB = async (
   if (isSemesterRegistrationExists) {
     throw new Error('This semester is already registered');
   }
+
+  // Check if there's already an upcoming or ongoing semester registration
+  const isUpcomingOrOngoingSemesterExists =
+    (await SemesterRegistration.find({
+      status: { $in: ['UPCOMING', 'ONGOING'] },
+    }).countDocuments()) > 0;
+
+  if (isUpcomingOrOngoingSemesterExists) {
+    throw new Error(
+      `There's already an ${payload.status} semester registered.`,
+    );
+  }
+
   try {
     const result = await SemesterRegistration.create(payload);
     return result;
@@ -46,6 +59,27 @@ const updateSemesterRegistrationInDB = async (
   payload: Partial<TSemesterRegistration>,
 ) => {
   try {
+    const registeredSemester = await SemesterRegistration.findById(id); // Get the registered semester
+    if (
+      registeredSemester?.status === 'UPCOMING' &&
+      payload?.status === 'ENDED'
+    ) {
+      throw new Error('Cannot end an upcoming semester');
+    } else if (
+      registeredSemester?.status === 'ONGOING' &&
+      payload?.status === 'UPCOMING'
+    ) {
+      throw new Error(
+        `Cannot make an ${registeredSemester.status} semester ${payload.status}`,
+      );
+    } else if (registeredSemester?.status === 'ENDED') {
+      throw new Error(`Cannot update an ${registeredSemester.status} semester`);
+    }
+
+    if (!registeredSemester) {
+      throw new Error('Semester registration not found');
+    }
+
     const result = await SemesterRegistration.findByIdAndUpdate(id, payload, {
       new: true,
     });
