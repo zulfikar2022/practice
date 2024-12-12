@@ -1,3 +1,4 @@
+import { RegistrationStatus } from './semesterRegistration.constants';
 import { TSemesterRegistration } from './semesterRegistration.interface';
 import { SemesterRegistration } from './semesterRegistration.model';
 
@@ -5,7 +6,7 @@ const createSemesterRegistrationIntoDB = async (
   payload: Partial<TSemesterRegistration>,
 ) => {
   if (!payload?.status) {
-    payload.status = 'UPCOMING'; // Set the default status to 'UPCOMING'
+    payload.status = RegistrationStatus.UPCOMING; // Set the default status to 'UPCOMING'
   }
   // Check if the semester is already registered
   const academicSemester = payload.academicSemester;
@@ -21,7 +22,9 @@ const createSemesterRegistrationIntoDB = async (
   // Check if there's already an upcoming or ongoing semester registration
   const isUpcomingOrOngoingSemesterExists =
     (await SemesterRegistration.find({
-      status: { $in: ['UPCOMING', 'ONGOING'] },
+      status: {
+        $in: [RegistrationStatus.UPCOMING, RegistrationStatus.ONGOING],
+      },
     }).countDocuments()) > 0;
 
   if (isUpcomingOrOngoingSemesterExists) {
@@ -64,18 +67,18 @@ const updateSemesterRegistrationInDB = async (
   try {
     const registeredSemester = await SemesterRegistration.findById(id); // Get the registered semester
     if (
-      registeredSemester?.status === 'UPCOMING' &&
-      payload?.status === 'ENDED'
+      registeredSemester?.status === RegistrationStatus.UPCOMING &&
+      payload?.status === RegistrationStatus.ENDED
     ) {
-      throw new Error('Cannot end an upcoming semester');
+      throw new Error('Cannot End an Upcoming semester');
     } else if (
-      registeredSemester?.status === 'ONGOING' &&
-      payload?.status === 'UPCOMING'
+      registeredSemester?.status === RegistrationStatus.ONGOING &&
+      payload?.status === RegistrationStatus.UPCOMING
     ) {
       throw new Error(
         `Cannot make an ${registeredSemester.status} semester ${payload.status}`,
       );
-    } else if (registeredSemester?.status === 'ENDED') {
+    } else if (registeredSemester?.status === RegistrationStatus.ENDED) {
       throw new Error(`Cannot update an ${registeredSemester.status} semester`);
     }
 
@@ -85,6 +88,7 @@ const updateSemesterRegistrationInDB = async (
 
     const result = await SemesterRegistration.findByIdAndUpdate(id, payload, {
       new: true,
+      runValidators: true,
     });
     return result;
   } catch (error) {
