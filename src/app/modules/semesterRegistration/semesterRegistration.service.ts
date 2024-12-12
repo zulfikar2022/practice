@@ -4,6 +4,9 @@ import { SemesterRegistration } from './semesterRegistration.model';
 const createSemesterRegistrationIntoDB = async (
   payload: Partial<TSemesterRegistration>,
 ) => {
+  if (!payload?.status) {
+    payload.status = 'UPCOMING'; // Set the default status to 'UPCOMING'
+  }
   // Check if the semester is already registered
   const academicSemester = payload.academicSemester;
   const isSemesterRegistrationExists =
