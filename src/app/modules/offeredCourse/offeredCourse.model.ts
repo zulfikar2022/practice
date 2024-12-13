@@ -91,17 +91,29 @@ const offeredCourseSchema = new mongoose.Schema<TOfferedCourse>(
       type: Number,
       required: true,
     },
-    days: {
-      type: String,
-      enum: Days,
-    },
+    days: [
+      {
+        type: String,
+        enum: Days,
+      },
+    ],
     startTime: {
       type: String,
       required: true,
+      validate: {
+        validator: (v: string) => /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(v),
+        message: (props: any) =>
+          `${props.value} is not a valid time format (HH:MM)!`,
+      },
     },
     endTime: {
       type: String,
       required: true,
+      validate: {
+        validator: (v: string) => /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(v),
+        message: (props: any) =>
+          `${props.value} is not a valid time format (HH:MM)!`,
+      },
     },
   },
   {
