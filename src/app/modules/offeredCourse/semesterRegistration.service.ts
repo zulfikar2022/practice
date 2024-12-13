@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 import { SemesterRegistration } from '../semesterRegistration/semesterRegistration.model';
 import { TOfferedCourse } from './offeredCourse.interface';
@@ -72,6 +73,37 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   }
 };
 
+const updateOfferedCourseIntoDB = async (
+  id: string,
+  payload: Partial<TOfferedCourse>,
+) => {
+  try {
+    const semesterRegistration = await OfferedCourse.findById(id).select(
+      'semesterRegistration faculty -_id',
+    );
+    if (!semesterRegistration) {
+      throw new Error('Offered course not found');
+    }
+    if (
+      await hasTimeConflict(
+        semesterRegistration.semesterRegistration,
+        payload,
+        id,
+      )
+    ) {
+      throw new Error('Time conflict with the same faculty');
+    }
+    const result = await OfferedCourse.findByIdAndUpdate(id, payload, {
+      new: true,
+      runValidators: true,
+    });
+    return result;
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+};
+
 export const OfferedCourseService = {
   createOfferedCourseIntoDB,
+  updateOfferedCourseIntoDB,
 };
