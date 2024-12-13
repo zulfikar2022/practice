@@ -2,6 +2,7 @@ import { AcademicDepartment } from '../academicDepartment/academicDepartment.mod
 import { SemesterRegistration } from '../semesterRegistration/semesterRegistration.model';
 import { TOfferedCourse } from './offeredCourse.interface';
 import { OfferedCourse } from './offeredCourse.model';
+import { hasTimeConflict } from './offeredCourse.utils';
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   try {
@@ -13,6 +14,7 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
       academicDepartment,
       academicFaculty,
     } = payload;
+
     const academicSemester =
       await SemesterRegistration.findById(semesterRegistration);
 
@@ -57,44 +59,12 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
         `Same course with same section already exists in the same semester`,
       );
     }
-    // time conflict resolve
-    const assignedSchedules = await OfferedCourse.find(
-      {
-        semesterRegistration,
-        faculty: payload.faculty,
-      },
-      {
-        startTime: 1,
-        endTime: 1,
-        days: 1,
-      },
-    );
-    console.log(assignedSchedules);
-    assignedSchedules.forEach((schedule) => {
-      schedule.days.forEach((day) => {
-        if (days.includes(day)) {
-          const startTimeHour = parseInt(schedule.startTime.split(':')[0]);
-          const endTimeHour = parseInt(schedule.endTime.split(':')[0]);
-          const endTimeMinute = parseInt(schedule.endTime.split(':')[1]);
-          const currentStartTimeHour = parseInt(startTime.split(':')[0]);
-          const currentStartTimeMinute = parseInt(startTime.split(':')[1]);
 
-          if (
-            currentStartTimeHour >= startTimeHour &&
-            currentStartTimeHour <= endTimeHour
-          ) {
-            if (
-              !(
-                currentStartTimeHour === endTimeHour &&
-                currentStartTimeMinute > endTimeMinute
-              )
-            ) {
-              throw new Error(`Time conflict  occurred.`);
-            }
-          }
-        }
-      });
-    });
+    // time conflict resolve with the same faculty
+    if (await hasTimeConflict(semesterRegistration, payload)) {
+      throw new Error('Time conflict with the same faculty');
+    }
+
     const result = await OfferedCourse.create(payload);
     return result;
   } catch (error) {
