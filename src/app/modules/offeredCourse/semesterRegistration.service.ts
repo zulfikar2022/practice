@@ -3,7 +3,10 @@ import { AcademicDepartment } from '../academicDepartment/academicDepartment.mod
 import { SemesterRegistration } from '../semesterRegistration/semesterRegistration.model';
 import { TOfferedCourse } from './offeredCourse.interface';
 import { OfferedCourse } from './offeredCourse.model';
-import { hasTimeConflict } from './offeredCourse.utils';
+import {
+  hasTimeConflictWhileCreating,
+  hasTimeConflictWhileUpdating,
+} from './offeredCourse.utils';
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   try {
@@ -62,7 +65,7 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     }
 
     // time conflict resolve with the same faculty
-    if (await hasTimeConflict(semesterRegistration, payload)) {
+    if (await hasTimeConflictWhileCreating(payload)) {
       throw new Error('Time conflict with the same faculty');
     }
 
@@ -85,10 +88,10 @@ const updateOfferedCourseIntoDB = async (
       throw new Error('Offered course not found');
     }
     if (
-      await hasTimeConflict(
-        semesterRegistration.semesterRegistration,
-        payload,
+      await hasTimeConflictWhileUpdating(
         id,
+        semesterRegistration.semesterRegistration.toString(),
+        payload,
       )
     ) {
       throw new Error('Time conflict with the same faculty');
