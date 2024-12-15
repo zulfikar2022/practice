@@ -78,7 +78,12 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
 
 const updateOfferedCourseIntoDB = async (
   id: string,
-  payload: Partial<TOfferedCourse>,
+  payload: Partial<
+    Pick<
+      TOfferedCourse,
+      'faculty' | 'days' | 'maxCapacity' | 'startTime' | 'endTime'
+    >
+  >,
 ) => {
   try {
     const semesterRegistration = await OfferedCourse.findById(id).select(

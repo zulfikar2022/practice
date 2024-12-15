@@ -37,17 +37,68 @@ export const hasTimeConflictWhileCreating = async (
 export const hasTimeConflictWhileUpdating = async (
   id: string,
   semesterRegistration: string,
-  payload: Partial<TOfferedCourse>,
+  payload: Partial<
+    Pick<
+      TOfferedCourse,
+      'faculty' | 'days' | 'maxCapacity' | 'startTime' | 'endTime'
+    >
+  >,
 ): Promise<boolean> => {
-  let indicator = false;
-  const { faculty, days } = payload;
+  const { faculty, days, startTime, endTime } = payload;
   const sameFacultySameSemester = await OfferedCourse.find({
     faculty,
     semesterRegistration,
   });
   if (sameFacultySameSemester.length === 0) {
-    return indicator;
+    return false;
   }
 
-  return indicator;
+  const offeredCourse: TOfferedCourse = sameFacultySameSemester?.find(
+    (element) => {
+      return element._id.toString() === id;
+    },
+  ) as TOfferedCourse;
+
+  if (!offeredCourse.days.some((element) => days?.includes(element))) {
+    return false;
+  }
+
+  let indicator = false;
+  const startTimeDate = new Date(`1970-01-01T${offeredCourse.startTime}`);
+  const endTimeDate = new Date(`1970-01-01T${offeredCourse.endTime}`);
+  for (let i = 0; days && days instanceof Array && i < days.length; i++) {
+    if (offeredCourse.days.includes(days[i])) {
+      if (startTime && !endTime) {
+        let newStartTime = new Date(`1970-01-01T${startTime}`);
+        return newStartTime >= startTimeDate && newStartTime <= endTimeDate;
+      } else if (!startTime && endTime) {
+        let newEndTime = new Date(`1970-01-01T${endTime}`);
+        return newEndTime >= startTimeDate && newEndTime <= endTimeDate;
+      } else if (startTime && endTime) {
+        let newStartTime = new Date(`1970-01-01T${startTime}`);
+        let newEndTime = new Date(`1970-01-01T${endTime}`);
+        return (
+          (newStartTime >= startTimeDate && newStartTime <= endTimeDate) ||
+          (newEndTime >= startTimeDate && newEndTime <= endTimeDate)
+        );
+      } else if (!startTime && !endTime) {
+        return false;
+      }
+    }
+  }
+  if (startTime && !endTime) {
+    let newStartTime = new Date(`1970-01-01T${startTime}`);
+    return newStartTime >= startTimeDate && newStartTime <= endTimeDate;
+  } else if (!startTime && endTime) {
+    let newEndTime = new Date(`1970-01-01T${endTime}`);
+    return newEndTime >= startTimeDate && newEndTime <= endTimeDate;
+  } else if (startTime && endTime) {
+    let newStartTime = new Date(`1970-01-01T${startTime}`);
+    let newEndTime = new Date(`1970-01-01T${endTime}`);
+    return (
+      (newStartTime >= startTimeDate && newStartTime <= endTimeDate) ||
+      (newEndTime >= startTimeDate && newEndTime <= endTimeDate)
+    );
+  }
+  return false;
 };
