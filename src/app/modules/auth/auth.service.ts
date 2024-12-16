@@ -32,7 +32,9 @@ const loginUserPermissionToService = async (payload: TLoginUser) => {
     needsPasswordChange: user?.needsPasswordChange,
   };
 };
+const changePasswordPermissionToService = async (payload: any) => {};
 
 export const AuthServices = {
   loginUserPermissionToService,
+  changePasswordPermissionToService,
 };
