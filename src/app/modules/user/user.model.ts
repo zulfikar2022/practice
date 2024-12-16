@@ -13,10 +13,12 @@ export const userSchema = new mongoose.Schema<TUser, UserModel>(
     password: {
       type: String,
       required: true,
+      select: false,
     },
     needsPasswordChange: {
       type: Boolean,
       default: true,
+      select: false,
     },
     role: {
       type: String,

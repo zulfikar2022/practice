@@ -1,4 +1,5 @@
 import { Model } from 'mongoose';
+import { USER_ROLE } from './user.constant';
 
 export interface TUser {
   id: string;
@@ -21,3 +22,5 @@ export type NewUser = {
   role: 'admin' | 'student' | 'faculty';
   id: string;
 };
+
+export type TUserRole = (typeof USER_ROLE)[keyof typeof USER_ROLE];

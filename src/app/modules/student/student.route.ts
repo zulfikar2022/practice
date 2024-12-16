@@ -4,16 +4,22 @@ import { requestValidator } from '../../middlewares/validatorMiddleware';
 import { validateRequest } from '../../middlewares/validateRequest';
 import { studentValidations } from './student.validation';
 import { auth } from '../../middlewares/auth';
+import { USER_ROLE } from '../user/user.constant';
 export const router = express.Router();
 
 // will call controller function
 
-router.get('/:id', auth, requestValidator, StudentControllers.getStudent);
-router.get('/', auth, StudentControllers.getStudents);
-router.delete('/:id', auth, StudentControllers.deleteStudent);
+router.get(
+  '/:id',
+  auth(USER_ROLE.ADMIN, USER_ROLE.STUDENT),
+  requestValidator,
+  StudentControllers.getStudent,
+);
+router.get('/', auth(USER_ROLE.ADMIN), StudentControllers.getStudents);
+router.delete('/:id', auth(USER_ROLE.ADMIN), StudentControllers.deleteStudent);
 router.patch(
   '/:id',
-  auth,
+  auth(USER_ROLE.ADMIN),
   requestValidator,
   validateRequest(studentValidations.updateStudentValidationSchema),
   StudentControllers.updateStudent,
