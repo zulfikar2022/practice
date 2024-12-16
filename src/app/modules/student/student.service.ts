@@ -20,25 +20,34 @@ const getStudentById = async (id: string) => {
   return student;
 };
 
-const getAllStudents = async (query: Record<string, string>) => {
-  const studentSearchableFields = ['email', 'name.firstName', 'presentAddress'];
-  const studentQuery = new QueryBuilder(
-    Student.find()
-      .populate('admissionSemester')
-      .populate({
-        path: 'academicDepartment',
-        populate: { path: 'academicFaculty' },
-      }),
-    query,
-  )
-    .search(studentSearchableFields)
-    .filter()
-    .sort()
-    .paginate()
-    .fields();
+// const getAllStudents = async (query: Record<string, string>) => {
+//   const studentSearchableFields = ['email', 'name.firstName', 'presentAddress'];
+//   const studentQuery = new QueryBuilder(
+//     Student.find()
+//       .populate('admissionSemester')
+//       .populate({
+//         path: 'academicDepartment',
+//         populate: { path: 'academicFaculty' },
+//       }),
+//     query,
+//   )
+//     .search(studentSearchableFields)
+//     .filter()
+//     .sort()
+//     .paginate()
+//     .fields();
 
-  const students = await studentQuery.modelQuery;
-  return students;
+//   const students = await studentQuery.modelQuery;
+//   return students;
+// };
+
+const getAllStudents = async (query: Record<string, string>) => {
+  try {
+    const students = await Student.find();
+    return students;
+  } catch (error) {
+    throw new AppError(404, 'some Error occurred');
+  }
 };
 
 const deleteFromDB = async (id: string) => {
