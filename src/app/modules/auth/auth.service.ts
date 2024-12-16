@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 const loginUserPermissionToService = async (payload: TLoginUser) => {
   const result = await User.findOne({
     id: payload.id,
-  }).select('-password -__v -createdAt -updatedAt ');
+  }).select('-__v -createdAt -updatedAt ');
   if (!result) {
     throw new Error('User not found');
   }
@@ -15,6 +15,11 @@ const loginUserPermissionToService = async (payload: TLoginUser) => {
   if (result.status === 'blocked') {
     throw new Error('User is blocked');
   }
+  const match = await bcrypt.compare(payload.password, result.password);
+  if (!match) {
+    throw new Error('Password is incorrect');
+  }
+  // access granted. Send access token and refresh token to the user
   return result;
 };
 
