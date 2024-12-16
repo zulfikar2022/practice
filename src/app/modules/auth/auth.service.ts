@@ -3,24 +3,20 @@ import { TLoginUser } from './auth.interface';
 import bcrypt from 'bcrypt';
 
 const loginUserPermissionToService = async (payload: TLoginUser) => {
-  const result = await User.findOne({
-    id: payload.id,
-  }).select('-__v -createdAt -updatedAt ');
-  if (!result) {
+  if (!(await User.isUserExistByCustomId(payload.id))) {
     throw new Error('User not found');
   }
-  if (result.isDeleted) {
+  if (await User.isDeleted(payload.id)) {
     throw new Error('User is deleted');
   }
-  if (result.status === 'blocked') {
+  if (await User.isBlocked(payload.id)) {
     throw new Error('User is blocked');
   }
-  const match = await bcrypt.compare(payload.password, result.password);
-  if (!match) {
+  if (!(await User.isPasswordMatch(payload.id, payload.password))) {
     throw new Error('Password is incorrect');
   }
   // access granted. Send access token and refresh token to the user
-  return result;
+  return {};
 };
 
 export const AuthServices = {
