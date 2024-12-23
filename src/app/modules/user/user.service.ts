@@ -65,7 +65,7 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
       userData.email as string | string[],
       'Activate your account',
       'Please click the button below to activate your account',
-      `<a href="http://localhost:3000/api/v1/auth/activate/${newUser[0]._id}/${activationToken}" style="background-color: blue; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Activate</a>`,
+      `<a href="${config.deployed_link}/api/v1/auth/activate/${newUser[0]._id}/${activationToken}" style="background-color: blue; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Activate</a>`,
     );
     return newStudent;
   } catch (error) {
@@ -126,7 +126,7 @@ const createFacultyIntoDB = async (
       userData.email as string | string[],
       'Activate your account',
       'Please click the button below to activate your account',
-      `<a href="http://localhost:3000/api/v1/auth/activate/${newUser[0]._id}/${activationToken}" style="background-color: blue; color: white; padding: 20px; text-decoration: none; border-radius: 5px;">Activate</a>`,
+      `<a href="${config.deployed_link}/api/v1/auth/activate/${newUser[0]._id}/${activationToken}" style="background-color: blue; color: white; padding: 20px; text-decoration: none; border-radius: 5px;">Activate</a>`,
     );
     return newFaculty;
   } catch (error) {

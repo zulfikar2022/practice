@@ -12,4 +12,5 @@ export default {
   node_env: process.env.NODE_ENV,
   jwt_access_secret: process.env.JWT_ACCESS_SECRET,
   app_password: process.env.APP_PASSWORD,
+  deployed_link: process.env.DEPLOYED_LINK,
 };

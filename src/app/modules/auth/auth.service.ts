@@ -41,6 +41,7 @@ const activateAccountService = async (userId: string, token: string) => {
     if ((decoded as jwt.JwtPayload).userId !== userId) {
       throw new Error('Invalid token');
     }
+
     // check if the user exists and is not activated
     const user = await User.findOne({ _id: userId, isActivated: false });
     if (!user) {
