@@ -12,7 +12,12 @@ const changePasswordValidationSchema = z.object({
   confirmPassword: z.string({ required_error: 'Confirm password is required' }),
 });
 
+const forgetPasswordValidationSchema = z.object({
+  id: z.string({ required_error: 'User ID is required' }),
+});
+
 export const AuthValidation = {
   loginValidationSchema,
   changePasswordValidationSchema,
+  forgetPasswordValidationSchema,
 };

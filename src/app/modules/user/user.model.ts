@@ -24,10 +24,19 @@ export const userSchema = new mongoose.Schema<TUser, UserModel>(
       type: String,
       enum: ['student', 'admin', 'faculty'],
     },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     status: {
       type: String,
       enum: ['in-progress', 'blocked'],
       default: 'in-progress',
+    },
+    isActivated: {
+      type: Boolean,
+      default: false,
     },
     isDeleted: {
       type: Boolean,

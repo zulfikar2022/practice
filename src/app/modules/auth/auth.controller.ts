@@ -19,8 +19,18 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
     data: null,
   });
 });
+const activateAccount = catchAsync(async (req: Request, res: Response) => {
+  try {
+    const { userId, token } = req.params;
+    await AuthServices.activateAccountService(userId, token);
+    res.send('<h1>Your account is activated successfully.</h1>');
+  } catch (error) {
+    throw error;
+  }
+});
 
 export const AuthControllers = {
   loginUser,
   changePassword,
+  activateAccount,
 };

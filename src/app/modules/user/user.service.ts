@@ -1,4 +1,3 @@
-import { Schema } from 'zod';
 import config from '../../config';
 import { TAcademicSemester } from '../academicSemester/academicSemester.interface';
 import { AcademicSemester } from '../academicSemester/academicSemester.model';
@@ -9,10 +8,12 @@ import { User } from './user.model';
 import { generateStudentId } from './user.utils';
 import { AppError } from '../../errors/AppError';
 import mongoose from 'mongoose';
-import { NextFunction } from 'express';
 import { TFaculty } from '../faculty/faculty.interface';
 import createFacultyId from '../../utils/createFacultyId';
 import { Faculty } from '../faculty/faculty.model';
+import { sendEmail } from '../../utils/sendEmail';
+import jwt from 'jsonwebtoken';
+import { USER_ROLE } from './user.constant';
 
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   let userData: Partial<TUser> = {} as NewUser;
@@ -23,6 +24,7 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
 
     userData.password = password || (config.default_password as string);
     userData.role = 'student';
+    userData.email = studentData.email;
     const academicSemester = await AcademicSemester.findById(
       studentData.admissionSemester,
     );
@@ -46,7 +48,25 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
     }
     await session.commitTransaction();
     await session.endSession();
-
+    const activationTokenPayload = {
+      userId: newUser[0]._id,
+      email: userData.email,
+      role: USER_ROLE.STUDENT,
+    };
+    const activationToken = jwt.sign(
+      activationTokenPayload,
+      config.jwt_access_secret as string,
+      {
+        expiresIn: '1d',
+      },
+    );
+    console.log('before the sendEmail function call');
+    await sendEmail(
+      userData.email as string | string[],
+      'Activate your account',
+      'Please click the button below to activate your account',
+      `<a href="http://localhost:3000/api/v1/auth/activate/${newUser[0]._id}/${activationToken}" style="background-color: blue; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Activate</a>`,
+    );
     return newStudent;
   } catch (error) {
     await session.abortTransaction();
@@ -69,6 +89,7 @@ const createFacultyIntoDB = async (
     userData.password = password || (config.default_password as string);
     userData.role = 'faculty';
     userData.id = facultyId;
+    userData.email = facultyData.email;
 
     // transaction-1
     console.log('inside the createFacultyIntoDB service');
@@ -76,6 +97,7 @@ const createFacultyIntoDB = async (
     if (!newUser.length) {
       throw new AppError(500, 'User creation failed');
     }
+
     facultyData.user = newUser[0]._id;
     facultyData.id = facultyId;
 
@@ -87,7 +109,25 @@ const createFacultyIntoDB = async (
     }
     await session.commitTransaction();
     await session.endSession();
-
+    const activationTokenPayload = {
+      userId: newUser[0]._id,
+      email: userData.email,
+      role: USER_ROLE.FACULTY,
+    };
+    const activationToken = jwt.sign(
+      activationTokenPayload,
+      config.jwt_access_secret as string,
+      {
+        expiresIn: '1d',
+      },
+    );
+    console.log('before the sendEmail function call');
+    await sendEmail(
+      userData.email as string | string[],
+      'Activate your account',
+      'Please click the button below to activate your account',
+      `<a href="http://localhost:3000/api/v1/auth/activate/${newUser[0]._id}/${activationToken}" style="background-color: blue; color: white; padding: 20px; text-decoration: none; border-radius: 5px;">Activate</a>`,
+    );
     return newFaculty;
   } catch (error) {
     await session.abortTransaction();

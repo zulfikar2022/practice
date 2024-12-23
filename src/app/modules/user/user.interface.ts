@@ -8,6 +8,8 @@ export interface TUser {
   role: 'admin' | 'student' | 'faculty';
   status: 'in-progress' | 'blocked';
   isDeleted: boolean;
+  email: string;
+  isActivated: boolean;
 }
 
 export interface UserModel extends Model<TUser> {

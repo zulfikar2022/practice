@@ -20,4 +20,10 @@ router.post(
   AuthControllers.changePassword,
 );
 
+router.get(
+  '/activate/:userId/:token',
+  // auth(USER_ROLE.ADMIN, USER_ROLE.FACULTY, USER_ROLE.STUDENT),
+  AuthControllers.activateAccount,
+);
+
 export const authRoute = router;

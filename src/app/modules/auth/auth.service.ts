@@ -34,7 +34,32 @@ const loginUserPermissionToService = async (payload: TLoginUser) => {
 };
 const changePasswordPermissionToService = async (payload: any) => {};
 
+const activateAccountService = async (userId: string, token: string) => {
+  try {
+    // verify the token
+    const decoded = jwt.verify(token, config.jwt_access_secret as string);
+    if ((decoded as jwt.JwtPayload).userId !== userId) {
+      throw new Error('Invalid token');
+    }
+    // check if the user exists and is not activated
+    const user = await User.findOne({ _id: userId, isActivated: false });
+    if (!user) {
+      throw new Error('User not found or already activated');
+    }
+    // activate the account
+    const activatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { isActivated: true },
+      { new: true },
+    );
+    return activatedUser;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const AuthServices = {
   loginUserPermissionToService,
   changePasswordPermissionToService,
+  activateAccountService,
 };
